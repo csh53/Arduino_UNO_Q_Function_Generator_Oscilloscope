@@ -1,5 +1,7 @@
 # Arduino UNO Q Function Generator, Oscilloscope & FFT Spectrum Analyzer
 
+![Project Overview](Infographic/00.png)
+
 A web-based function generator, oscilloscope, and FFT spectrum analyzer built for the Arduino UNO Q.
 
 This project combines the STM32 MCU, Arduino Bridge, MPU-side Python backend, and browser-based Web UI for real-time signal generation, acquisition, measurement, FFT analysis, and visualization.
