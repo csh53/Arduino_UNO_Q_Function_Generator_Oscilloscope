@@ -1,0 +1,4861 @@
+<!DOCTYPE html>
+
+<html data-ui-build="v19.43" lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>UNO Q · Function Generator &amp; Oscilloscope</title>
+<style>
+:root{
+  --page:#f3f5f7;
+  --card:#ffffff;
+  --soft:#f7f8fa;
+  --border:#d9dee5;
+  --text:#1f2933;
+  --muted:#6f7b87;
+  --scope:#091017;
+  --grid:#426170;
+  --grid-strong:#6d8999;
+  --ch1:#DDBB32;
+  --ch2:#00d6e6;
+  --ok:#218a5b;
+  --warn:#c77b00;
+  --danger:#c33b49;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{
+  background:var(--page);
+  color:var(--text);
+  font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+}
+button,select,input{font:inherit}
+input.detent-hit{
+  border-color:#78909f!important;
+  box-shadow:0 0 0 1px rgba(120,144,159,.22)!important;
+  background:#f3f6f8!important;
+}
+.app{
+  width:100%;
+  height:100%;
+  padding:10px 14px 7px;
+  display:grid;
+  grid-template-rows:40px minmax(0,1.32fr) minmax(0,.62fr) 40px 13px;
+  gap:8px;
+}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  min-width:0;
+}
+.title-wrap{min-width:0}
+.title{
+  font-size:20px;font-weight:800;letter-spacing:.15px;line-height:1.05;white-space:nowrap;
+}
+.subtitle{margin-top:4px;font-size:10px;color:var(--muted);white-space:nowrap}
+.status{
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:7px;
+  padding:6px 9px;border:1px solid var(--border);border-radius:8px;background:var(--card);
+  font-size:10px;color:var(--muted);
+}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.main-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0;
+}
+.panel{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:9px;min-width:0;min-height:0;
+  display:grid;grid-template-rows:28px minmax(0,1fr);
+}
+.panel-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-width:0
+}
+.head-title{font-size:11px;font-weight:800;letter-spacing:.32px}
+.head-sub{font-size:9px;color:var(--muted);margin-top:2px}
+.channel-badge{
+  display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;
+}
+.chip{
+  min-width:34px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;
+  color:#101418;font-size:10px;font-weight:900
+}
+.ch1{background:var(--ch1)}
+.ch2{background:var(--ch2)}
+.channel-body{
+  min-height:0;
+  display:grid;
+  grid-template-columns:210px minmax(0,1fr);
+  gap:8px;
+}
+.side{
+  min-height:0;
+  display:flex;flex-direction:column;gap:6px;
+}
+.group{
+  background:var(--soft);border:1px solid var(--border);border-radius:8px;padding:6px 7px;
+}
+.group-title{
+  font-size:8px;font-weight:800;color:var(--muted);letter-spacing:.55px;margin-bottom:5px;
+}
+.field{
+  display:grid;grid-template-columns:1fr 74px;align-items:center;gap:6px;margin-top:4px;
+}
+.field:first-of-type{margin-top:0}
+.field label{font-size:9px;color:#4f5964;white-space:nowrap}
+.field input,.field select{
+  width:100%;height:24px;border:1px solid #cdd4dc;border-radius:5px;background:white;
+  color:var(--text);font-size:10px;padding:0 5px;outline:none;
+}
+.field select{grid-column:1/-1}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.metric{
+  border:1px solid var(--border);border-radius:7px;background:white;padding:5px 6px;min-width:0
+}
+.metric .k{font-size:7.5px;color:var(--muted);font-weight:750;letter-spacing:.25px}
+.metric .v{margin-top:2px;font-size:13px;font-weight:850;white-space:nowrap}
+.metric .u{font-size:8px;color:var(--muted);font-weight:650}
+.scale-row{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+button{
+  height:25px;border:1px solid #cfd6de;border-radius:6px;background:white;color:#3a4651;
+  font-size:9px;font-weight:800;padding:0 7px;cursor:pointer;
+}
+button:hover{background:#f3f6f8}
+button.active{background:#29333d;color:white;border-color:#29333d}
+.run.active{background:#185e80;border-color:#185e80}
+.health{
+  display:flex;align-items:center;gap:6px;font-size:9px;font-weight:800;color:var(--ok)
+}
+.health-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.scope-wrap{
+  min-width:0;min-height:0;
+  display:grid;grid-template-rows:minmax(0,1fr) 25px;
+  background:var(--scope);border-radius:8px;overflow:hidden;border:1px solid #17242e;
+}
+.scope-area{position:relative;min-height:0}
+canvas{display:block;width:100%;height:100%}
+.scope-foot{
+  min-width:0;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:0 8px;border-top:1px solid #17242e;color:#a9b7c3;font-size:8.5px;
+}
+.scope-foot .left,.scope-foot .right{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.trace{display:inline-flex;align-items:center;gap:4px}
+.trace::before{content:"";width:12px;height:2px;display:inline-block;background:currentColor}
+.trace.ch1t{color:var(--ch1)}
+.trace.ch2t{color:var(--ch2)}
+.compare{
+  display:grid;grid-template-rows:32px minmax(0,1fr);
+}
+.compare .panel-head{padding-bottom:3px}
+.compare .head-sub{line-height:1.25}
+.compare-body{
+  min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 276px;gap:8px;
+}
+.quality{
+  min-height:0;
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+}
+.quality .metric{display:flex;flex-direction:column;justify-content:center;padding:7px 8px}
+.quality .metric .v{font-size:15px}
+.specbar{
+  display:grid;
+  grid-template-columns:1.05fr 1.05fr 1.65fr;
+  gap:6px;min-height:0;
+}
+.spec{
+  background:var(--card);border:1px solid var(--border);border-radius:8px;
+  padding:5px 8px;display:flex;align-items:center;gap:9px;min-width:0;
+}
+.spec-tag{
+  flex:0 0 auto;font-size:9px;font-weight:900;color:#3d4853;
+}
+.spec-text{
+  min-width:0;font-size:8.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.creator{
+  display:flex;align-items:center;justify-content:flex-end;
+  font-size:9px;color:#7b858f;padding-right:2px;white-space:nowrap;
+}
+.small-note{font-size:8px;color:var(--muted);line-height:1.3}
+@media(max-height:780px){
+  .app{padding-top:7px;grid-template-rows:38px minmax(0,1.36fr) minmax(0,.56fr) 38px 12px;gap:6px}
+  .title{font-size:18px}
+  .panel{padding:7px;grid-template-rows:25px minmax(0,1fr)}
+  .channel-body{grid-template-columns:198px minmax(0,1fr);gap:6px}
+  .group{padding:5px 6px}
+  .field{margin-top:3px}
+  .metric{padding:4px 5px}
+  .metric .v{font-size:12px}
+}
+@media(max-width:1320px){
+  .channel-body{grid-template-columns:188px minmax(0,1fr)}
+  .field{grid-template-columns:1fr 65px}
+  .compare-body{grid-template-columns:minmax(0,1fr) 238px}
+  .title{font-size:18px}
+  .subtitle{font-size:9px}
+}
+
+.timebase{
+  display:grid;grid-template-columns:1fr;gap:4px;
+}
+.timebase-line{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:8.5px;color:var(--muted);
+}
+.timebase strong{font-size:9px;color:var(--text)}
+.timebase input[type="range"]{
+  width:100%;height:16px;margin:0;accent-color:#29333d;cursor:pointer;
+}
+.time-ticks{
+  display:flex;justify-content:space-between;font-size:7px;color:#8a949e;
+}
+
+
+.source-control{margin-top:6px}
+.source-control:first-of-type{margin-top:0}
+.source-control .control-top{
+  display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:3px
+}
+.source-control label{font-size:8.5px;color:#4f5964;font-weight:650}
+.source-control .number-wrap{display:flex;align-items:center;gap:3px;white-space:nowrap}
+.source-control input[type="number"]{
+  width:63px;height:23px;border:1px solid #cdd4dc;border-radius:5px;
+  background:#fff;color:var(--text);font-size:9px;padding:0 4px;text-align:right
+}
+.source-control .unit{font-size:8px;color:var(--muted);min-width:20px}
+.source-control input[type="range"]{width:100%;height:15px;margin:0;accent-color:#29333d;cursor:pointer}
+.source-scale{display:flex;justify-content:space-between;font-size:6.5px;color:#7a858f;margin-top:-1px}
+.freq-scale{position:relative;display:block;height:8px;line-height:8px;font-size:7px!important;color:#69747f!important;font-weight:650}
+.freq-scale .freq-label{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.freq-scale .edge-left{left:0;transform:none}
+.freq-scale .edge-right{right:0;left:auto;transform:none}
+.freq-scale .freq-tick{position:absolute;top:1px;width:1px;height:4px;background:#a5adb5;transform:translateX(-50%)}
+.sampling-info{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}
+.sampling-info .mini{border:1px solid var(--border);border-radius:6px;background:#fff;padding:4px 5px}
+.sampling-info .mini .mk{font-size:7px;color:var(--muted)}
+.sampling-info .mini .mv{font-size:10px;font-weight:800;margin-top:1px}
+.rate-select{width:100%;height:18px;border:1px solid #c8d2da;border-radius:5px;background:#fff;color:#102231;font-size:9.6px;font-weight:850;padding:0 3px;outline:none}
+.rate-select:focus{border-color:#557488;box-shadow:0 0 0 1px rgba(85,116,136,.18)}
+
+
+.compare-body{grid-template-columns:minmax(0,1fr) 304px}
+.compare-head-right{display:flex;align-items:center;gap:7px;min-width:0}
+.trace-visibility-switch{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  flex:0 0 auto;
+  margin-right:34px;
+}
+.trace-visibility-switch button{
+  min-width:44px!important;
+}
+#cmpCh1Toggle.active{
+  box-shadow:inset 0 -2px #DDBB32;
+}
+#cmpCh2Toggle.active{
+  box-shadow:inset 0 -2px #00d6e6;
+}
+.trace-hidden{
+  opacity:.28!important;
+}
+.domain-switch{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.domain-switch button{height:24px;min-width:72px;padding:0 10px}
+.quality{grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr)}
+.quality .metric{padding:5px 7px}
+.quality .metric .v{font-size:13px}
+.analysis-mode{
+  width:240px;
+  min-width:240px;
+  max-width:240px;
+  flex:0 0 240px;
+  box-sizing:border-box;
+  font-size:8px;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:center;
+  padding:4px 6px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:#fff
+}
+
+
+.nyquist-note{
+  font-size:6.7px;color:#7d8790;margin-top:2px;line-height:1.15
+}
+.trigger-row{display:flex;align-items:center;gap:5px}
+.trigger-label{font-size:7.5px;color:var(--muted);min-width:28px}
+.trigger-buttons{flex:1}
+.trigger-buttons button{font-size:7px}
+.trigger-control{margin-top:5px}
+.trigger-top{display:flex;align-items:center;justify-content:space-between;font-size:7.5px;color:var(--muted)}
+.trigger-control .number-wrap{display:flex;align-items:center;gap:3px}
+.trigger-control input[type="number"]{
+  width:56px;height:22px;border:1px solid #cdd4dc;border-radius:5px;
+  background:#fff;color:var(--text);font-size:8px;padding:0 4px;text-align:right
+}
+.trigger-control input[type="range"]{
+  width:100%;height:14px;margin:1px 0 0;accent-color:#29333d
+}
+.trigger-control .unit{font-size:7px;color:var(--muted)}
+.trigger-status{
+  margin-top:4px;font-size:6.8px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.freq-axis-switch{display:flex!important;flex:0 0 auto!important}
+.trigger-marker{
+  pointer-events:none
+}
+
+
+.trigger-title-row{
+  display:flex;align-items:center;justify-content:space-between;gap:5px
+}
+.trigger-title-status{
+  color:#65727d;font-size:6.5px;font-weight:700;letter-spacing:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:92px
+}
+
+/* Keep both side control rails completely inside the 16:9 viewport. */
+@media(max-height:900px){
+  .side{gap:4px}
+  .group{padding:4px 6px}
+  .group-title{margin-bottom:3px}
+  .source-control{margin-top:4px}
+  .source-control .control-top{margin-bottom:1px}
+  .source-control input[type="number"]{height:20px}
+  .source-control input[type="range"]{height:12px}
+  .nyquist-note{margin-top:0;font-size:6.2px}
+  .metrics{gap:3px}
+  .metric{padding:3px 5px}
+  .metric .v{font-size:11.5px}
+  button{height:22px}
+  .small-note{font-size:7px;line-height:1.1}
+  .timebase{gap:2px}
+  .timebase input[type="range"]{height:13px}
+  .trigger-control{margin-top:3px}
+  .trigger-control input[type="number"]{height:19px}
+  .trigger-control input[type="range"]{height:11px}
+  .sampling-info{gap:3px;margin-top:3px}
+  .sampling-info .mini{padding:3px 4px}
+  .health{font-size:8px}
+}
+
+
+
+/* ===== FINAL PACKAGED LAYOUT ===== */
+/* Global header */
+.topbar{width:100%!important;min-width:0!important}
+.topbar .title-wrap{flex:1 1 100%!important;width:100%!important;min-width:0!important}
+.refined-header{width:100%!important;display:grid!important;grid-template-columns:minmax(0,1fr) max-content!important;align-items:center!important;column-gap:28px!important}
+.header-left{min-width:0!important}
+.header-right{justify-self:end!important;margin-left:auto!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:14px!important;text-align:right!important}
+.header-right .creator{font-size:10.5px!important;font-weight:750!important;color:#52606b!important;white-space:nowrap}
+.header-right .status-pill{display:inline-flex!important;align-items:center!important;gap:5px!important;border:1px solid var(--border)!important;border-radius:8px!important;background:#fff!important;padding:6px 11px!important;font-size:9.5px!important;font-weight:750!important;white-space:nowrap}
+.header-right .status-dot{width:7px!important;height:7px!important;border-radius:50%;display:inline-block}
+
+/* Viewport allocation: protect upper instrument controls first. */
+.app{grid-template-rows:42px clamp(550px,61vh,582px) minmax(0,1fr)!important;gap:7px!important;padding-bottom:7px!important}
+.main-grid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;min-height:0!important}
+.main-grid>.panel{min-height:0!important;overflow:hidden!important;grid-template-rows:32px minmax(0,1fr)!important}
+.main-grid .channel-body,.main-grid .scope-wrap,.main-grid .scope-area{min-height:0!important}
+.main-grid .side{min-height:0!important;gap:5px!important}
+.main-grid .group{flex:0 0 auto!important;padding:6px 8px!important}
+
+/* Instrument title rows and RUN/STOP */
+.instrument-head{display:grid!important;grid-template-columns:max-content max-content minmax(0,1fr)!important;align-items:center!important;column-gap:12px!important;min-width:0!important}
+.instrument-head .head-title{font-size:13px!important;font-weight:850!important;letter-spacing:.01em!important;white-space:nowrap}
+.panel-run{display:flex;align-items:center;gap:4px}
+.panel-run button{width:68px!important;min-width:68px!important;height:26px!important;padding:0 8px!important;font-size:9.5px!important;font-weight:850!important}
+/* Right RUN/STOP visually matches the left panel's inward position relative to its graph. */
+.main-grid>.panel:nth-child(2) .panel-run{margin-left:44px!important}
+.instrument-meta{min-width:0!important;margin-left:auto!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:10px!important}
+.spec-inline{font-size:8.3px!important;font-weight:650!important;color:#596873!important;white-space:nowrap}
+
+/* Top-panel readability */
+.main-grid .group-title{font-size:9.8px!important;font-weight:850!important;letter-spacing:.035em!important;margin-bottom:5px!important}
+.main-grid .field label,.main-grid .source-control label,.main-grid .trigger-label,.main-grid .trigger-top{font-size:9.2px!important;font-weight:700!important}
+.main-grid .field select{height:27px!important;font-size:10px!important}
+#waveform{font-weight:700}
+#waveform option.wave-option{font-weight:700}
+#waveform option.default-option{font-weight:400}
+.main-grid .source-control{margin-top:6px!important}
+.main-grid .source-control input[type="number"],.main-grid .trigger-control input[type="number"]{height:25px!important;font-size:10.2px!important;font-weight:700!important}
+.main-grid .source-control input[type="range"],.main-grid .trigger-control input[type="range"],.main-grid .timebase input[type="range"]{height:14px!important}
+.main-grid .metric{padding:5px 6px!important}
+.main-grid .metric .k{font-size:8px!important;font-weight:750!important}
+.main-grid .metric .v{font-size:14px!important;font-weight:850!important;line-height:1.05!important}
+.main-grid .timebase-line{font-size:8.8px!important}.main-grid .timebase-line strong{font-size:9.8px!important}
+.main-grid .trigger-buttons button,.main-grid #trigOnBtn,.main-grid #trigOffBtn{font-size:8.7px!important;font-weight:800!important}
+.main-grid .sampling-info{margin-top:0!important}.main-grid .sampling-info .mini .mk{font-size:7.8px!important}.main-grid .sampling-info .mini .mv{font-size:11.2px!important;font-weight:850!important}
+.main-grid .small-note,.main-grid .nyquist-note,.main-grid .source-scale,.main-grid .time-ticks{font-size:7px!important}
+.trigger-title-status{font-size:7px!important;max-width:110px!important}
+/* v19.30 HTML-only footer refinement: enlarge the ADC acquisition readout
+   and use the available lower space so the right-side control stack aligns
+   visually with the DAC OUTPUT STATUS card. */
+.acquisition-status-group{padding-top:5px!important;padding-bottom:5px!important;min-height:67px!important;box-sizing:border-box!important;display:flex!important;align-items:center!important}
+.acquisition-status-group .sampling-info{width:100%!important;margin-top:0!important}
+.acquisition-status-group .sampling-info .mini{min-height:48px!important;padding:6px 6px!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
+.acquisition-status-group .sampling-info .mini .mk{font-size:8.3px!important;font-weight:760!important;line-height:1.05!important}
+.acquisition-status-group .sampling-info .mini .mv{font-size:14px!important;font-weight:880!important;line-height:1.05!important;margin-top:4px!important}
+.vertical-health{margin-top:5px!important;min-height:12px!important}
+
+/* Comparison: compact title line, use only remaining height. */
+.compare{min-height:0!important;overflow:hidden!important;grid-template-rows:30px minmax(0,1fr)!important}
+.compare-body,.compare .scope-wrap,.compare .scope-area,.compare .quality{min-height:0!important}
+.compare .scope-wrap{grid-template-rows:minmax(0,1fr) 22px!important}
+.compare-head-compact{display:grid!important;grid-template-columns:minmax(0,1fr) max-content!important;align-items:center!important;gap:12px!important;padding-bottom:1px!important;min-width:0!important}
+.compare-title-line{display:flex!important;align-items:baseline!important;gap:10px!important;min-width:0!important;white-space:nowrap!important}
+.compare-title-line .head-title{flex:0 0 auto!important;font-size:11px!important}
+.compare-title-line .head-sub{margin-top:0!important;font-size:8px!important;line-height:1!important;color:#6d7984!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+.compare-head-right{justify-self:end!important;gap:5px!important;flex-wrap:nowrap!important;min-width:0!important}
+.compare-head-right button{height:24px!important;padding:0 10px!important;font-size:8.2px!important}
+.compare-head-right .analysis-mode{font-size:7px!important;padding:4px 6px!important;width:240px!important;min-width:240px!important;max-width:240px!important;flex:0 0 240px!important}
+.compare .quality .metric{padding:4px 6px!important}.compare .quality .metric .v{font-size:12.5px!important}
+
+@media(max-width:1350px){
+  .panel-run button{width:56px!important;min-width:56px!important}
+  .spec-inline{font-size:7.7px!important}
+  .instrument-head{column-gap:7px!important}
+  .main-grid>.panel:nth-child(2) .panel-run{margin-left:38px!important}
+}
+@media(max-height:820px){
+  .app{grid-template-rows:40px 528px minmax(0,1fr)!important;gap:6px!important}
+  .main-grid>.panel:nth-child(2) .panel-run{margin-left:38px!important}
+}
+@media(max-height:760px){
+  .app{grid-template-rows:38px 503px minmax(0,1fr)!important;gap:5px!important}
+  .main-grid .group{padding-top:4px!important;padding-bottom:4px!important}
+  .main-grid .side{gap:4px!important}
+  .main-grid .group-title{font-size:9.2px!important;margin-bottom:3px!important}
+  .main-grid .metric .v{font-size:13px!important}
+  .main-grid>.panel:nth-child(2) .panel-run{margin-left:30px!important}
+  .compare{grid-template-rows:24px minmax(0,1fr)!important}
+}
+
+/* Pro measurement refinements */
+.time-ticks{
+  display:flex !important;
+  justify-content:space-between !important;
+}
+.freq-axis-switch button{
+  min-width:58px !important;
+}
+
+
+/* Independent-instrument refinement */
+.preview-timebase-group .timebase{gap:2px}
+.preview-timebase-group .timebase-line{font-size:8.5px}
+.preview-timebase-group .time-ticks{font-size:6.8px}
+.preview-timebase-group input[type="range"]{height:13px}
+
+
+
+/* ===== v19.16 UI / stability baseline =====
+   Keep the mode/status box anchored at the far right, but pull only the
+   CH1..X LINEAR button row left so X LINEAR ends on the plot boundary. */
+.compare-button-group{
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  flex:0 0 auto!important;
+  margin-right:67px!important;
+}
+.compare-button-group .trace-visibility-switch{margin-right:34px!important}
+
+/* AUTOSET is a one-shot command, not a latched mode. */
+#autoBtn.autoset-press{
+  background:#29333d!important;
+  color:#fff!important;
+  border-color:#29333d!important;
+}
+
+/* ===== v2 control stability ===== */
+#freqSlider,#ampSlider,#offsetSlider{
+  height:26px !important;
+  cursor:pointer !important;
+  touch-action:none;
+  user-select:none;
+  position:relative;
+  z-index:3;
+}
+#freqSlider:active,#ampSlider:active,#offsetSlider:active{
+  cursor:grabbing !important;
+}
+#freq:disabled,#amp:disabled,#freqSlider:disabled,#ampSlider:disabled{
+  opacity:.45!important;
+  cursor:default!important;
+}
+.source-control{position:relative;}
+
+
+/* ===== v4 final vertical fit ===== */
+.main-grid > .panel{
+  padding-bottom:11px !important;
+}
+
+/* Keep the lower analysis useful, but let its graph yield height first. */
+.compare{
+  grid-template-rows:26px minmax(0,1fr) !important;
+}
+.compare .panel-head{
+  padding-bottom:1px !important;
+}
+
+/* On compact-height screens protect the oscilloscope footer/status first. */
+@media(max-height:780px){
+  .main-grid > .panel{
+    padding-bottom:9px !important;
+  }
+  .compare{
+    grid-template-rows:24px minmax(0,1fr) !important;
+  }
+}
+
+
+/* ===== v5 REAL FIT: effective final allocation =====
+   Normal viewport : upper instruments 570–610 px (64vh target)
+   <= 820 px high  : upper instruments 550 px
+   <= 760 px high  : upper instruments 525 px
+   Lower analysis receives the remaining viewport height.
+*/
+
+
+.preview-title-row{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+}
+.preview-auto-btn{
+  display:inline-flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  height:20px!important;
+  min-width:58px!important;
+  padding:6px 8px!important;
+  border-radius:5px!important;
+  border:1px solid #cfd6dc!important;
+  background:#fff!important;
+  color:#29333d!important;
+  font-size:7.8px!important;
+  font-weight:900!important;
+  letter-spacing:.02em!important;
+  line-height:1!important;
+}
+.preview-auto-btn:hover{background:#f3f5f7!important}
+.preview-auto-btn:active{transform:translateY(1px)}
+.preview-auto-btn.autofit-press{
+  background:#29333d!important;
+  color:#fff!important;
+  border-color:#29333d!important;
+}
+
+
+.domain-switch button:disabled{
+  opacity:.44;
+  cursor:default;
+  filter:saturate(.5);
+  box-shadow:none!important;
+}
+
+#freqModeBtn,
+#timeModeBtn{
+  font-size:10px!important;
+  font-weight:800!important;
+  letter-spacing:.01em;
+}
+
+/* ===== v18.4 small-control readability + detents ===== */
+.main-grid .source-scale,
+.main-grid .time-ticks{
+  font-size:7.5px!important;
+  color:#65717d!important;
+  font-weight:600!important;
+}
+.main-grid .nyquist-note{
+  font-size:7px!important;
+  color:#66727e!important;
+  font-weight:600!important;
+}
+
+/* ===== v19.17 typography refinement ===== */
+/* Header: preserve placement, improve readability. */
+.header-right .creator{
+  font-size:12px!important;
+  font-weight:780!important;
+}
+.header-right .status-pill{
+  padding:7px 13px!important;
+  font-size:11px!important;
+  font-weight:820!important;
+  border-radius:9px!important;
+  gap:6px!important;
+}
+.header-right .status-dot{
+  width:8px!important;
+  height:8px!important;
+}
+
+/* FFT/comparison readout: keep card layout, enlarge labels and values only. */
+.compare .quality .metric .k{
+  font-size:8.6px!important;
+  font-weight:800!important;
+  line-height:1.05!important;
+}
+.compare .quality .metric .v{
+  font-size:14.5px!important;
+  font-weight:880!important;
+  line-height:1.08!important;
+}
+.compare .quality .metric .u{
+  font-size:8.5px!important;
+}
+
+
+/* ===== v19.20 DAC NOISE control (carried from v19.18) =====
+   Compact header control; no vertical layout growth, so DAC/ADC/FFT heights stay unchanged. */
+.main-grid>.panel:first-child .instrument-head{
+  grid-template-columns:max-content max-content max-content minmax(0,1fr)!important;
+  column-gap:8px!important;
+}
+.dac-noise-control{
+  margin-left:12px;
+  height:25px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:0 7px;
+  border:1px solid #d2d8df;
+  border-radius:7px;
+  background:#fff;
+  white-space:nowrap;
+  box-sizing:border-box;
+}
+.dac-noise-control .noise-name{
+  font-size:7.7px;
+  font-weight:900;
+  letter-spacing:.18px;
+  color:#394752;
+}
+.dac-noise-control .noise-toggle{
+  width:43px!important;
+  min-width:43px!important;
+  height:19px!important;
+  padding:0 3px!important;
+  border:1px solid #cbd2d9!important;
+  border-radius:10px!important;
+  background:#eef1f4!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:2px!important;
+  box-sizing:border-box!important;
+}
+.dac-noise-control .noise-toggle .toggle-dot{
+  width:13px;
+  height:13px;
+  border-radius:50%;
+  background:#2d3944;
+  flex:0 0 13px;
+  transition:transform .12s ease;
+}
+.dac-noise-control .noise-toggle .toggle-text{
+  width:20px;
+  font-size:6.5px;
+  line-height:1;
+  font-weight:900;
+  color:#66727d;
+  text-align:center;
+}
+.dac-noise-control .noise-toggle.active{
+  background:#c026d3!important;
+  border-color:#a21caf!important;
+}
+.dac-noise-control .noise-toggle.active .toggle-dot{
+  transform:translateX(20px);
+  background:#fff;
+}
+.dac-noise-control .noise-toggle.active .toggle-text{
+  transform:translateX(-15px);
+  color:#fff;
+}
+.dac-noise-control .noise-level-label{
+  font-size:6.8px;
+  font-weight:850;
+  color:#6b7782;
+}
+.dac-noise-control input[type="range"]{
+  flex:0 0 72px;
+  width:72px;
+  min-width:72px;
+  height:12px;
+  margin:0;
+  accent-color:#4a5965;
+}
+.dac-noise-control .noise-value{
+  flex:0 0 24px;
+  width:24px;
+  text-align:right;
+  font-size:7.7px;
+  font-weight:900;
+  color:#394752;
+}
+.dac-noise-control.noise-on{
+  background:#fdf4ff;
+  border-color:#d946ef;
+  box-shadow:inset 0 0 0 1px rgba(192,38,211,.16);
+}
+.dac-noise-control.noise-on .noise-name,
+.dac-noise-control.noise-on .noise-level-label,
+.dac-noise-control.noise-on .noise-value{
+  color:#86198f;
+}
+.dac-noise-control.noise-on input[type="range"]{
+  accent-color:#c026d3;
+}
+@media(max-width:1500px){
+  .main-grid>.panel:first-child .instrument-head{column-gap:5px!important}
+  .dac-noise-control{margin-left:8px;gap:4px;padding:0 5px}
+  .dac-noise-control input[type="range"]{flex-basis:58px;width:58px;min-width:58px}
+  .dac-noise-control .noise-level-label{display:none}
+}
+@media(max-width:1320px){
+  .dac-noise-control input[type="range"]{flex-basis:46px;width:46px;min-width:46px}
+  .dac-noise-control .noise-name{font-size:7px}
+  .dac-noise-control .noise-value{flex-basis:21px;width:21px;font-size:7px}
+}
+
+
+/* ===== v19.20 DISPLAY HOLD ===== */
+.main-grid>.panel:nth-child(2) .instrument-head{
+  grid-template-columns:max-content max-content max-content minmax(0,1fr)!important;
+  column-gap:8px!important;
+}
+.display-hold-control{margin-left:14px;display:flex;align-items:center}
+.display-hold-control .display-hold-btn{
+  width:58px!important;min-width:58px!important;height:26px!important;
+  padding:0 8px!important;border:1px solid #aab3bb!important;border-radius:4px!important;
+  background:#f5f7f8!important;color:#53606b!important;font-size:9.5px!important;
+  font-weight:900!important;letter-spacing:.02em;
+}
+.display-hold-control .display-hold-btn.held{
+  border-color:#d97706!important;background:#f59e0b!important;color:#fff!important;
+}
+@media(max-width:1500px){
+  .display-hold-control{margin-left:10px}
+  .display-hold-control .display-hold-btn{width:54px!important;min-width:54px!important}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+<div class="title-wrap"><div class="title-row refined-header"><div class="header-left"><div class="title">UNO Q · FUNCTION GENERATOR &amp; OSCILLOSCOPE</div></div><div class="top-meta header-right"><div class="creator">Sung-ho Cho and GPT-5.6 Sol · High</div><div class="status-pill"><span class="status-dot"></span><span id="statusText">CONNECTING TO UNO Q</span></div></div></div><div class="subtitle">A0/DAC function generator · A1/ADC oscilloscope · 0–3.3 V · optional test: A0 → 1 kΩ → A1</div></div>
+
+</header>
+<main class="main-grid">
+<section class="panel">
+<div class="panel-head instrument-head"><div class="head-title">FUNCTION GENERATOR (DAC OUTPUT)</div><div class="panel-run"><button class="run" id="dacRunBtn">RUN</button><button class="active" id="dacStopBtn">STOP</button></div><div class="dac-noise-control" id="noiseControl" aria-label="DAC noise control"><span class="noise-name">NOISE</span><button type="button" class="noise-toggle" id="noiseToggle" aria-pressed="false" aria-label="DAC noise on/off"><span class="toggle-dot"></span><span class="toggle-text" id="noiseToggleText">OFF</span></button><span class="noise-level-label">LVL</span><input aria-label="Noise level" id="noiseLevel" max="100" min="0" step="1" type="range" value="30"/><span class="noise-value" id="noiseValue">30%</span></div><div class="instrument-meta"><span class="spec-inline">12-bit · 0–4095 · 0–3.3 V · LSB ≈ 0.806 mV</span><div class="channel-badge"><span class="chip ch1">CH1</span><span>A0 / DAC</span></div></div></div>
+<div class="channel-body">
+<aside class="side">
+<div class="group">
+<div class="group-title">SOURCE</div>
+<div class="field"><select id="waveform">
+<option class="wave-option" selected="" value="sine">Sine</option>
+<option class="wave-option" value="square">Square</option>
+<option class="wave-option" value="triangle">Triangle</option>
+<option class="wave-option" value="dc">DC</option>
+<option class="default-option" value="default">↺ Default</option>
+</select></div>
+<div class="source-control">
+<div class="control-top">
+<label for="freqSlider">Frequency</label>
+<div class="number-wrap"><input id="freq" max="100" min="1" step="1" type="number" value="10"/><span class="unit">Hz</span></div>
+</div>
+<input id="freqSlider" max="100" min="1" step="1" type="range" value="10"/>
+<div class="source-scale freq-scale">
+<span class="freq-label edge-left">1</span>
+<span class="freq-label" style="left:19.19%">20</span>
+<span class="freq-label" style="left:39.39%">40</span>
+<span class="freq-label" style="left:59.60%">60</span>
+<span class="freq-label" style="left:79.80%">80</span>
+<span class="freq-label edge-right">100 Hz</span>
+</div>
+<div class="nyquist-note" id="nyquistNote">ADC Nyquist = 1199 Hz · DAC range = 1–100 Hz</div>
+</div>
+<div class="source-control">
+<div class="control-top">
+<label for="ampSlider">Amplitude</label>
+<div class="number-wrap"><input id="amp" max="1.65" min="0" step="0.01" type="number" value="1.00"/><span class="unit">Vpk</span></div>
+</div>
+<input id="ampSlider" max="1.65" min="0" step="0.01" type="range" value="1.00"/>
+<div class="source-scale"><span>0</span><span>0.55</span><span>1.10</span><span>1.65 V</span></div>
+</div>
+<div class="source-control">
+<div class="control-top">
+<label for="offsetSlider">Offset</label>
+<div class="number-wrap"><input id="offset" max="3.3" min="0" step="0.01" type="number" value="1.65"/><span class="unit">V</span></div>
+</div>
+<input id="offsetSlider" max="3.3" min="0" step="0.01" type="range" value="1.65"/>
+<div class="source-scale"><span>0</span><span>1.1</span><span>2.2</span><span>3.3 V</span></div>
+</div>
+</div>
+<div class="group preview-timebase-group">
+<div class="group-title preview-title-row"><span>PREVIEW TIMEBASE</span><button class="preview-auto-btn" id="dacAutoFitBtn" type="button">AUTO FIT</button></div>
+<div class="timebase">
+<div class="timebase-line"><span>Time/div</span><strong id="dacTimeDivValue">20 ms/div</strong></div>
+<input aria-label="Function generator preview time per division" id="dacTimeDiv" max="11" min="0" step="1" type="range" value="5"/>
+<div class="time-ticks"><span>0.5 ms</span><span>10 ms</span><span>200 ms</span><span>1 s</span><span>2 s</span></div>
+<div class="timebase-line"><span>Window</span><strong id="dacWindowValue">200 ms</strong></div>
+</div>
+</div>
+<div class="group">
+<div class="group-title" id="dacStatusTitle">OUTPUT STATUS</div>
+<div class="metrics">
+<div class="metric"><div class="k">DAC CODE</div><div class="v" id="dacCode">—</div></div>
+<div class="metric"><div class="k">VOLTAGE</div><div class="v" id="dacV">—</div></div>
+<div class="metric"><div class="k">VPP</div><div class="v" id="dacVpp">—</div></div>
+<div class="metric"><div class="k">MEAN</div><div class="v" id="dacMean">—</div></div>
+</div>
+</div>
+
+</aside>
+<div class="scope-wrap">
+<div class="scope-area"><canvas id="dacCanvas"></canvas></div>
+<div class="scope-foot">
+<div class="left">
+<span class="trace ch1t">CH1 DAC</span>
+<span id="dacScale">— V/div</span>
+</div>
+<div class="right"><span id="dacTimeDivFooter">20 ms/div</span></div>
+</div>
+</div>
+</div>
+</section>
+<section class="panel">
+<div class="panel-head instrument-head"><div class="head-title">OSCILLOSCOPE (ADC INPUT)</div><div class="panel-run"><button class="run" id="adcRunBtn">RUN</button><button class="active" id="adcStopBtn">STOP</button></div><div class="display-hold-control"><button type="button" class="display-hold-btn" id="displayHoldBtn" aria-pressed="false">HOLD</button></div><div class="instrument-meta"><span class="spec-inline" id="adcSpecInline">14-bit · 0–16383 · 0–3.3 V · LSB ≈ 0.201 mV · 2.0 kS/s</span><div class="channel-badge"><span class="chip ch2">CH2</span><span>A1 / ADC</span></div></div></div>
+<div class="channel-body">
+<aside class="side">
+<div class="group">
+<div class="group-title">VERTICAL · OSCILLOSCOPE</div>
+<div class="scale-row">
+<button id="autoBtn">AUTOSET</button>
+<button class="active" id="fixedBtn">0–3.3 V</button>
+</div>
+<div class="health vertical-health"><span class="health-dot"></span><span id="health">CONNECTING</span></div>
+</div>
+<div class="group">
+<div class="group-title" id="adcMeasureTitle">MEASURE</div>
+<div class="metrics">
+<div class="metric"><div class="k">ADC CODE</div><div class="v" id="adcCode">—</div></div>
+<div class="metric"><div class="k">VOLTAGE</div><div class="v" id="adcV">—</div></div>
+<div class="metric"><div class="k">ERROR</div><div class="v" id="errV">—</div></div>
+<div class="metric"><div class="k">FREQ.</div><div class="v" id="adcFreq">—</div></div>
+</div>
+</div>
+<div class="group">
+<div class="group-title">HORIZONTAL TIMEBASE</div>
+<div class="timebase">
+<div class="timebase-line"><span>Time/div</span><strong id="adcTimeDivValue">20 ms/div</strong></div>
+<input aria-label="Time per division" id="adcTimeDiv" max="11" min="0" step="1" type="range" value="5"/>
+<div class="time-ticks"><span>0.5 ms</span><span>10 ms</span><span>200 ms</span><span>1 s</span><span>2 s</span></div>
+<div class="timebase-line"><span>Window</span><strong id="adcWindowValue">200 ms</strong></div>
+</div>
+</div>
+<div class="group">
+<div class="group-title trigger-title-row">
+<span>TRIGGER · CH2 ADC</span>
+<span class="trigger-title-status" id="triggerStatus">OFF · FREE RUN</span>
+</div>
+<div class="trigger-row">
+<span class="trigger-label">Edge</span>
+<div class="scale-row trigger-buttons">
+<button class="active" id="trigRiseBtn">↑ RISE</button>
+<button id="trigFallBtn">↓ FALL</button>
+</div>
+</div>
+<div class="trigger-control">
+<div class="trigger-top">
+<span>Level</span>
+<div class="number-wrap"><input id="trigLevel" max="3.3" min="0" step="0.01" type="number" value="0.00"/><span class="unit">V</span></div>
+</div>
+<input id="trigLevelSlider" max="3.3" min="0" step="0.01" type="range" value="0"/>
+</div>
+<div class="scale-row" style="margin-top:4px">
+<button id="trigOnBtn">ON</button>
+<button class="active" id="trigOffBtn">OFF</button>
+</div>
+</div>
+
+<div class="group acquisition-status-group"><div class="sampling-info">
+<div class="mini"><div class="mk">ADC ACQUISITION</div><div class="mv" id="adcFixedRateText">2.0 kS/s</div></div>
+<div class="mini"><div class="mk">SAMPLES / CYCLE</div><div class="mv" id="samplesPerCycleText">160</div></div>
+</div></div></aside>
+<div class="scope-wrap">
+<div class="scope-area"><canvas id="adcCanvas"></canvas></div>
+<div class="scope-foot">
+<div class="left">
+<span class="trace ch2t">CH2 ADC</span>
+<span id="adcScale">— V/div</span>
+</div>
+<div class="right"><span id="adcTimeDivFooter">20 ms/div</span></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<section class="panel compare">
+<div class="panel-head compare-head-compact">
+<div class="compare-title-line">
+<div class="head-title">SIGNAL ANALYSIS &amp; COMPARISON</div>
+<div class="head-sub" id="compareSubtitle">Independent CH1 / CH2 analysis · comparison metrics activate when both are available</div>
+</div>
+<div class="compare-head-right">
+<div class="compare-button-group">
+<div class="trace-visibility-switch" id="traceVisibilitySwitch">
+<button class="active" id="cmpCh1Toggle" title="Show / hide CH1 analysis trace">CH1</button>
+<button class="active" id="cmpCh2Toggle" title="Show / hide CH2 analysis trace">CH2</button>
+</div>
+<div class="domain-switch">
+<button class="active" id="freqModeBtn">FFT</button>
+<button id="timeModeBtn">TIME</button>
+</div>
+<div class="domain-switch freq-axis-switch" id="freqAxisSwitch">
+<button class="active" id="freqLogBtn">X LOG</button>
+<button id="freqLinearBtn">X LINEAR</button>
+</div>
+</div>
+<div class="analysis-mode" id="modeText">RAW · TRIGGERED</div>
+</div>
+</div>
+<div class="compare-body">
+<div class="scope-wrap">
+<div class="scope-area"><canvas id="cmpCanvas"></canvas></div>
+<div class="scope-foot">
+<div class="left" id="cmpLegendFoot">
+<span class="trace ch1t" id="cmpCh1Label">CH1 REF</span>
+<span class="trace ch2t" id="cmpCh2Label">CH2 ADC</span>
+</div>
+<div class="right"><span id="rangeText">Y: —</span><span id="xSpanText">400 ms</span></div>
+</div>
+</div>
+<div class="quality">
+<div class="metric"><div class="k" id="cmpK1">MEAN ΔV</div><div class="v" id="cmpV1">—</div></div>
+<div class="metric"><div class="k" id="cmpK2">RMSE ΔV</div><div class="v" id="cmpV2">—</div></div>
+<div class="metric"><div class="k" id="cmpK3">PEAK ΔV</div><div class="v" id="cmpV3">—</div></div>
+<div class="metric"><div class="k" id="cmpK4">EST. DELAY</div><div class="v" id="cmpV4">—</div></div>
+<div class="metric"><div class="k" id="cmpK5">PHASE</div><div class="v" id="cmpV5">—</div></div>
+<div class="metric"><div class="k" id="cmpK6">CORRELATION</div><div class="v" id="cmpV6">—</div></div>
+</div>
+</div>
+</section>
+
+
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const canvasIds = ['dacCanvas','adcCanvas','cmpCanvas'];
+  const C = Object.fromEntries(canvasIds.map(id => [id, $(id)]));
+  const X = Object.fromEntries(canvasIds.map(id => [id, C[id].getContext('2d')]));
+
+  const BUILD_ID = 'v19.50';
+  const TIME_DIVS = [0.5,1,2,5,10,20,50,100,200,500,1000,2000];
+  const MIN_FREQ = 1;
+  const MAX_FREQ = 100;
+
+  function enforceFrequencyControlRange() {
+    const fi = $('freq');
+    const fs = $('freqSlider');
+    if (fi) { fi.min = '1'; fi.max = String(MAX_FREQ); fi.step = '1'; }
+    if (fs) { fs.min = '1'; fs.max = String(MAX_FREQ); fs.step = '1'; }
+  }
+  const SPECTRUM_MIN_HZ = 0.2;
+  const SPECTRUM_FADE_ZERO_HZ = 0.3;
+  const SPECTRUM_FADE_FULL_HZ = 0.5;
+  const SPECTRUM_MAX_HZ = 10000;
+  const SPECTRUM_DB_MIN = -60;
+  const SPECTRUM_DB_MAX = 12;
+  const SOURCE_NOISE_TEXTURE_SAMPLES = 4096;
+  const RING_CAPACITY = 32768;
+  const RENDER_FPS = 25;
+  const BROWSER_LIVE_LAG_MAX_S = 1.0;
+  const MEASURE_DISPLAY_HZ = 2;
+  const MEASURE_DISPLAY_INTERVAL_MS = 1000/MEASURE_DISPLAY_HZ;
+  const ANALYSIS_INTERVAL_MS = 500;
+  const SPECTRUM_INTERVAL_MS = 500;
+  const ADC_ANALYSIS_SAMPLE_CAP = 8192;
+  const MPU_ANALYSIS_POLL_MS = 500;
+  const MPU_SPECTRUM_POLL_MS = 500;
+  const FREQUENCY_DETENTS = [5,10,20,30,40,50,60,70,80,90,100];
+  const OFFSET_DETENT_V = 1.65;
+  const OFFSET_DETENT_CAPTURE_V = 0.05;
+  const OFFSET_DETENT_RELEASE_V = 0.12;
+  const MAX_TIME_TRACE_POINTS = 1100;
+
+  class SampleRing {
+    constructor(capacity) {
+      this.capacity = capacity;
+      this.adc = new Float32Array(capacity);
+      this.counter = new Uint32Array(capacity);
+      this.origin = new Uint32Array(capacity);
+      this.head = 0;
+      this.size = 0;
+    }
+
+    clear() {
+      this.head = 0;
+      this.size = 0;
+    }
+
+    push(adc, counter, origin) {
+      let idx;
+
+      if (this.size < this.capacity) {
+        idx = (this.head + this.size) % this.capacity;
+        this.size++;
+      } else {
+        idx = this.head;
+        this.head = (this.head + 1) % this.capacity;
+      }
+
+      this.adc[idx] = adc;
+      this.counter[idx] = counter >>> 0;
+      this.origin[idx] = origin >>> 0;
+    }
+
+    indexFromOldest(i) {
+      return (this.head + i) % this.capacity;
+    }
+
+    latestWindowCount(n) {
+      return Math.max(0, Math.min(this.size, n));
+    }
+
+    latestStart(n) {
+      const count = this.latestWindowCount(n);
+      return this.size - count;
+    }
+
+    getOldestOffset(i) {
+      const idx = this.indexFromOldest(i);
+      return {
+        adc: this.adc[idx],
+        counter: this.counter[idx],
+        origin: this.origin[idx],
+      };
+    }
+  }
+
+  const ring = new SampleRing(RING_CAPACITY);
+
+  const state = {
+    auto: false,
+    autoScale: null,
+    fs: 2000,
+    displayFps: 25,
+    dacTimeDivMs: 20,
+    dacWindowMs: 200,
+    adcTimeDivMs: 20,
+    adcWindowMs: 200,
+    lastSeq: -1,
+    latestCounter: 0,
+    phaseOrigin: 0,
+    dacRunning: false,
+    adcRunning: false,
+    dacHoldAvailable: false,
+    dacHoldParams: null,
+    bridgeOk: false,
+    bridgeConnecting: true,
+    bridgePollFailures: 0,
+    dropped: 0,
+    clientMissed: false,
+    browserResumePending: false,
+    displayHold: false,
+    sharedUiGeneration: -1,
+
+    compareMode: 'frequency',
+    showCh1Analysis: true,
+    showCh2Analysis: true,
+    freqAxis: 'log',
+    triggerEdge: 'rise',
+    triggerLevel: 0.0,
+    triggerEnabled: false,
+    triggerPosition: 0.20,
+    triggerSnapshot: null,
+    triggerCounter: null,
+    triggerFraction: 0,
+    triggerStatus: 'OFF · FREE RUN',
+    triggerConfigGeneration: 0,
+    triggerLastSentKey: '',
+    // v19.35: retain a valid trigger lock between genuine edges.
+    // This is display-phase state only; acquisition/rendering remain live.
+    triggerLockUpdatedAt: 0,
+    adcFreqCache: null,
+    adcFreqCacheVersion: -1,
+    adcFreqCacheAt: 0,
+    dataVersion: 0,
+    renderDirty: true,
+    timeDirty: true,
+    compareDirty: true,
+    analysisDirty: true,
+    spectrumDirty: true,
+
+    lastAnalysisAt: 0,
+    lastSpectrumAt: 0,
+    lastMeasureDisplayAt: -Infinity,
+
+    timeAnalysis: null,
+    spectrum: null,
+
+    // MPU/Python is the primary analysis engine from v16.5 onward.
+    // MPU analysis remains only as a temporary fallback.
+    mpuAnalysis: null,
+    mpuAnalysisError: '',
+    mpuAnalysisBusy: false,
+    mpuAnalysisAt: 0,
+
+    // DAC source synchronization. MCU/Python is authoritative.
+    sourceGeneration: -1,
+    sourceInitialized: false,
+    pendingSource: null,
+    lastConfirmedParams: null,
+    configEditGeneration: 0,
+    configPending: 0,
+
+    // v19.20 DAC additive noise state. MCU/Python remains authoritative.
+    noiseEnabled: false,
+    noiseLevel: 30,
+    noiseEditGeneration: 0,
+
+    // One-shot oscilloscope AUTOSET state.
+    // AUTOSET analyzes only ADC samples acquired after its own start counter.
+    autoset: {
+      active: false,
+      phase: 'idle',
+      token: 0,
+      requestId: 0,
+      startCounter: 0,
+      startedAt: 0,
+      minSamples: 0,
+      maxWaitMs: 500,
+      hintFreq: null,
+      messageUntil: 0,
+      message: '',
+      detail: '',
+      mode: 'ok',
+      recommendationApplied: false,
+      lockStartedAt: 0,
+      triggerConfigGeneration: 0,
+      lastLockRetryAt: 0,
+      freezeSnapshot: null,
+      lockedSnapshot: null,
+      lockedFrequencyHz: null,
+      lockedVppV: null,
+    },
+
+    // DAC run/stop events are kept locally so frozen ADC history does not
+    // suddenly change its reference when DAC state changes later.
+    dacEvents: [],
+  };
+
+  let configTimer = null;
+  let configCommitChain = Promise.resolve();
+  let freqDragging = false;
+  let ampDragging = false;
+  let offsetDragging = false;
+  let freqDetentLatch = null;
+  let offsetDetentLatched = false;
+
+  function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+  function pnum(id,d){
+    const v = parseFloat($(id).value);
+    return Number.isFinite(v) ? v : d;
+  }
+
+  function params() {
+    return {
+      wf: $('waveform').value,
+      f: Math.round(clamp(pnum('freq',10), MIN_FREQ, MAX_FREQ)),
+      a: clamp(pnum('amp',1), 0, 1.65),
+      o: clamp(pnum('offset',1.65), 0, 3.3),
+    };
+  }
+
+  function cloneParams(p) {
+    return {wf:p.wf, f:p.f, a:p.a, o:p.o};
+  }
+
+  function wfCode(name){
+    return ({dc:0,sine:1,square:2,triangle:3})[name] ?? 0;
+  }
+
+  function markDirty(analysis=true) {
+    // Full UI invalidation for explicit control/configuration changes.
+    state.renderDirty = true;
+    state.timeDirty = true;
+    state.compareDirty = true;
+    if (analysis) {
+      state.analysisDirty = true;
+      state.spectrumDirty = true;
+    }
+  }
+
+  function markSampleDirty() {
+    // Live ADC samples change the upper TIME view continuously. The lower
+    // FFT view is MPU-owned and must redraw only when a new analysis snapshot
+    // arrives; otherwise the same 8193-bin spectrum would be painted again on
+    // every sample batch. TIME comparison still follows the live ring.
+    state.renderDirty = true;
+    state.timeDirty = true;
+    if (state.compareMode === 'time') {
+      state.compareDirty = true;
+    }
+  }
+
+  function freqToSlider(f) {
+    return Math.round(clamp(Number(f),MIN_FREQ,MAX_FREQ));
+  }
+
+  function sliderToFreq(v) {
+    return Math.round(clamp(Number(v),MIN_FREQ,MAX_FREQ));
+  }
+
+  function sourceControlsBusy() {
+    return (
+      freqDragging ||
+      ampDragging ||
+      offsetDragging ||
+      state.configPending > 0
+    );
+  }
+
+  function sourceToParams(source) {
+    if (!source) return null;
+
+    const wf = ['dc','sine','square','triangle'].includes(source.waveform)
+      ? source.waveform
+      : 'dc';
+
+    const fRaw = Number(source.frequency_hz);
+    const aRaw = Number(source.amplitude_v);
+    const oRaw = Number(source.offset_v);
+
+    return {
+      wf,
+      f: Math.round(clamp(Number.isFinite(fRaw) ? fRaw : 10,MIN_FREQ,MAX_FREQ)),
+      a: clamp(Number.isFinite(aRaw) ? aRaw : 1,0,1.65),
+      o: clamp(Number.isFinite(oRaw) ? oRaw : 1.65,0,3.3),
+    };
+  }
+
+  function setSourceControls(p) {
+    if (!p) return;
+    $('waveform').value = p.wf;
+    $('freq').value = String(Math.round(p.f));
+    $('amp').value = p.a.toFixed(2);
+    $('offset').value = p.o.toFixed(2);
+    $('freqSlider').value = freqToSlider(p.f);
+    $('freq').classList.toggle('detent-hit',FREQUENCY_DETENTS.includes(Math.round(p.f)));
+    $('ampSlider').value = p.a;
+    $('offsetSlider').value = p.o;
+    updateDcControlState();
+  }
+
+  function updateDcControlState() {
+    const isDc = $('waveform').value === 'dc';
+
+    $('freq').disabled = isDc;
+    $('freqSlider').disabled = isDc;
+    $('amp').disabled = isDc;
+    $('ampSlider').disabled = isDc;
+  }
+
+  function setNoiseControls(enabled,level) {
+    const on = !!enabled;
+    const pct = Math.round(clamp(Number(level),0,100));
+    state.noiseEnabled = on;
+    state.noiseLevel = pct;
+
+    const box = $('noiseControl');
+    const toggle = $('noiseToggle');
+    if (box) box.classList.toggle('noise-on',on);
+    if (toggle) {
+      toggle.classList.toggle('active',on);
+      toggle.setAttribute('aria-pressed',String(on));
+    }
+    $('noiseToggleText').textContent = on ? 'ON' : 'OFF';
+    $('noiseLevel').value = String(pct);
+    $('noiseValue').textContent = pct + '%';
+  }
+
+  function serverNoiseState(source) {
+    return {
+      enabled: !!source?.noise_enabled,
+      level: Math.round(clamp(Number(source?.noise_level_percent ?? 30),0,100)),
+    };
+  }
+
+  function applyServerSource(source,force=false) {
+    if (!source) return;
+
+    const generation = Number(source.generation);
+
+    if (
+      !force &&
+      Number.isFinite(generation) &&
+      generation <= state.sourceGeneration
+    ) return;
+
+    if (!force && sourceControlsBusy()) {
+      state.pendingSource = source;
+      return;
+    }
+
+    const p = sourceToParams(source);
+    if (!p) return;
+    const noise = serverNoiseState(source);
+
+    const first = !state.sourceInitialized;
+    state.sourceInitialized = true;
+    state.pendingSource = null;
+
+    if (Number.isFinite(generation)) {
+      if (state.sourceInitialized && generation !== state.sourceGeneration) {
+        clearAutosetLockedSnapshot();
+      }
+      state.sourceGeneration = generation;
+    }
+
+    state.lastConfirmedParams = cloneParams(p);
+    state.dacRunning = !!source.running;
+
+    if (source.analysis_available) {
+      state.dacHoldAvailable = true;
+      state.dacHoldParams = {
+        wf: String(source.held_waveform || source.waveform || p.wf),
+        f: Number(source.held_frequency_hz ?? source.frequency_hz ?? p.f),
+        a: Number(source.held_amplitude_v ?? source.amplitude_v ?? p.a),
+        o: Number(source.held_offset_v ?? source.offset_v ?? p.o),
+      };
+    } else if (!state.dacRunning) {
+      state.dacHoldAvailable = false;
+      state.dacHoldParams = null;
+    }
+
+    const changedCounter = Number(source.changed_counter);
+
+    if (Number.isFinite(changedCounter)) {
+      state.phaseOrigin = changedCounter;
+
+      if (first) {
+        resetDacEvents(changedCounter,state.dacRunning,p);
+      } else {
+        const last = state.dacEvents[state.dacEvents.length-1];
+        if (!last || Number(last.counter) !== changedCounter) {
+          addDacEvent(changedCounter,state.dacRunning,p);
+        }
+      }
+    }
+
+    setSourceControls(p);
+    setNoiseControls(noise.enabled,noise.level);
+    updateRunButtons();
+    markDirty(true);
+  }
+
+  function flushPendingSource() {
+    if (!sourceControlsBusy() && state.pendingSource) {
+      const pending = state.pendingSource;
+      state.pendingSource = null;
+      applyServerSource(pending);
+    }
+  }
+
+  function frequencyDetentRadius(index,release=false) {
+    // Linear 1 Hz slider: keep detents deliberately light. Enter within
+    // ±1 Hz; release once the pointer moves more than ~2 Hz away.
+    return release ? 2 : 1;
+  }
+
+  function snappedFrequencyFromSlider(rawValue) {
+    const raw = Number(rawValue);
+
+    if (freqDetentLatch !== null) {
+      const index = FREQUENCY_DETENTS.indexOf(freqDetentLatch);
+      const pos = freqToSlider(freqDetentLatch);
+      const releaseRadius = index >= 0
+        ? frequencyDetentRadius(index,true)
+        : 10;
+
+      if (Math.abs(raw-pos) <= releaseRadius) {
+        return {
+          f:freqDetentLatch,
+          slider:pos,
+          latched:true,
+        };
+      }
+
+      freqDetentLatch = null;
+    }
+
+    let bestIndex = -1;
+    let bestDist = Infinity;
+
+    for (let i=0;i<FREQUENCY_DETENTS.length;i++) {
+      const pos = freqToSlider(FREQUENCY_DETENTS[i]);
+      const dist = Math.abs(raw-pos);
+
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestIndex = i;
+      }
+    }
+
+    if (bestIndex >= 0) {
+      const captureRadius = frequencyDetentRadius(
+        bestIndex,
+        false
+      );
+
+      if (bestDist <= captureRadius) {
+        const f = FREQUENCY_DETENTS[bestIndex];
+        freqDetentLatch = f;
+
+        return {
+          f,
+          slider:freqToSlider(f),
+          latched:true,
+        };
+      }
+    }
+
+    return {
+      f:sliderToFreq(raw),
+      slider:raw,
+      latched:false,
+    };
+  }
+
+  function snappedOffset(rawValue) {
+    const v = clamp(Number(rawValue),0,3.3);
+
+    if (offsetDetentLatched) {
+      if (
+        Math.abs(v-OFFSET_DETENT_V) <= OFFSET_DETENT_RELEASE_V
+      ) {
+        return OFFSET_DETENT_V;
+      }
+
+      offsetDetentLatched = false;
+    }
+
+    if (
+      Math.abs(v-OFFSET_DETENT_V) <= OFFSET_DETENT_CAPTURE_V
+    ) {
+      offsetDetentLatched = true;
+      return OFFSET_DETENT_V;
+    }
+
+    return v;
+  }
+
+  function syncControlsFromNumbers() {
+    const p = params();
+    $('freq').value = String(Math.round(p.f));
+    $('amp').value = p.a.toFixed(2);
+    $('offset').value = p.o.toFixed(2);
+    $('freqSlider').value = freqToSlider(p.f);
+    $('ampSlider').value = p.a;
+    $('offsetSlider').value = p.o;
+  }
+
+  async function post(url,data) {
+    const r = await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data || {}),
+    });
+
+    const j = await r.json();
+
+    if (!r.ok || j.ok === false) {
+      throw new Error(j.error || `HTTP ${r.status}`);
+    }
+
+    return j;
+  }
+
+  async function postSharedUi(patch) {
+    try {
+      const j = await post('/api/ui',patch);
+      // The response carries the complete authoritative UI snapshot, not just
+      // our patch. Applying it avoids losing a near-simultaneous change made
+      // by another browser between two generations.
+      if (j?.ui) applySharedUiState(j.ui);
+      return j?.ui || null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function setDisplayHold(on,share=false) {
+    on = !!on;
+    const changed = state.displayHold !== on;
+    state.displayHold = on;
+    const b=$('displayHoldBtn');
+    b.classList.toggle('held',on);
+    b.setAttribute('aria-pressed',String(on));
+
+    if (changed && !on) {
+      // Resume from the newest ring/analysis state; never replay old frames.
+      state.triggerSnapshot=null;
+      state.triggerCounter=null;
+      state.renderDirty=true;
+      state.timeDirty=true;
+      state.compareDirty=true;
+      state.analysisDirty=true;
+      state.spectrumDirty=true;
+    }
+
+    if (changed && share) postSharedUi({display_hold:on});
+  }
+
+  function setVerticalMode(auto,scale=null,share=false) {
+    const nextAuto = !!auto;
+    state.auto = nextAuto;
+
+    if (nextAuto && scale &&
+        Number.isFinite(Number(scale.lo)) &&
+        Number.isFinite(Number(scale.hi)) &&
+        Number(scale.hi) > Number(scale.lo)) {
+      state.autoScale={lo:Number(scale.lo),hi:Number(scale.hi)};
+    } else if (!nextAuto) {
+      state.autoScale=null;
+    }
+
+    $('autoBtn').classList.remove('active');
+    $('fixedBtn').classList.toggle('active',!nextAuto);
+
+    if (share) {
+      const patch={vertical_auto:nextAuto};
+      if (nextAuto && state.autoScale) {
+        patch.vertical_lo_v=state.autoScale.lo;
+        patch.vertical_hi_v=state.autoScale.hi;
+      }
+      postSharedUi(patch);
+    }
+    markDirty(false);
+  }
+
+  function setAnalysisTraceVisibility(channel,on,share=false) {
+    if (channel === 1) state.showCh1Analysis=!!on;
+    if (channel === 2) state.showCh2Analysis=!!on;
+    updateAnalysisTraceButtons();
+    markDirty(false);
+    if (share) {
+      postSharedUi(channel === 1
+        ? {show_ch1:!!on}
+        : {show_ch2:!!on});
+    }
+  }
+
+  function setFrequencyAxis(axis,share=false) {
+    axis = axis === 'linear' ? 'linear' : 'log';
+    state.freqAxis = axis;
+    $('freqLinearBtn').classList.toggle('active',axis==='linear');
+    $('freqLogBtn').classList.toggle('active',axis==='log');
+    state.spectrumDirty = true;
+    markDirty(true);
+    if (share) postSharedUi({freq_axis:axis});
+  }
+
+  function applySharedUiState(ui,force=false) {
+    if (!ui) return;
+    const generation = Number(ui.generation);
+    if (!force && Number.isFinite(generation) &&
+        generation <= state.sharedUiGeneration) return;
+
+    const oldTrigger = [
+      state.triggerEnabled,state.triggerEdge,
+      Number(state.triggerLevel.toFixed(6))
+    ].join('|');
+
+    if (Number.isFinite(Number(ui.dac_time_div_ms))) {
+      const idx=TIME_DIVS.findIndex(v=>Math.abs(v-Number(ui.dac_time_div_ms))<1e-9);
+      if (idx>=0 && state.dacTimeDivMs!==TIME_DIVS[idx]) {
+        updateDacTimebase(idx,false);
+      }
+    }
+    if (Number.isFinite(Number(ui.adc_time_div_ms))) {
+      const idx=TIME_DIVS.findIndex(v=>Math.abs(v-Number(ui.adc_time_div_ms))<1e-9);
+      if (idx>=0 && state.adcTimeDivMs!==TIME_DIVS[idx]) {
+        updateAdcTimebase(idx,false,false);
+      }
+    }
+
+    if (typeof ui.display_hold === 'boolean') {
+      setDisplayHold(ui.display_hold,false);
+    }
+
+    if (typeof ui.vertical_auto === 'boolean') {
+      const scale={lo:Number(ui.vertical_lo_v),hi:Number(ui.vertical_hi_v)};
+      setVerticalMode(ui.vertical_auto,scale,false);
+    }
+
+    if (typeof ui.show_ch1 === 'boolean') {
+      state.showCh1Analysis=ui.show_ch1;
+    }
+    if (typeof ui.show_ch2 === 'boolean') {
+      state.showCh2Analysis=ui.show_ch2;
+    }
+    updateAnalysisTraceButtons();
+
+    if (ui.compare_mode === 'time' || ui.compare_mode === 'frequency') {
+      if (state.compareMode !== ui.compare_mode) {
+        setCompareMode(ui.compare_mode,false);
+      }
+    }
+    if (ui.freq_axis === 'log' || ui.freq_axis === 'linear') {
+      if (state.freqAxis !== ui.freq_axis) {
+        setFrequencyAxis(ui.freq_axis,false);
+      }
+    }
+
+    if (typeof ui.trigger_enabled === 'boolean') {
+      state.triggerEnabled=ui.trigger_enabled;
+    }
+    if (ui.trigger_edge === 'rise' || ui.trigger_edge === 'fall') {
+      state.triggerEdge=ui.trigger_edge;
+    }
+    if (Number.isFinite(Number(ui.trigger_level_v))) {
+      state.triggerLevel=clamp(Number(ui.trigger_level_v),0,3.3);
+      $('trigLevel').value=state.triggerLevel.toFixed(2);
+      $('trigLevelSlider').value=state.triggerLevel;
+    }
+    const tg=Number(ui.trigger_config_generation);
+    if (Number.isFinite(tg) && tg>=0) {
+      state.triggerConfigGeneration=Math.max(state.triggerConfigGeneration,tg);
+    }
+
+    const newTrigger = [
+      state.triggerEnabled,state.triggerEdge,
+      Number(state.triggerLevel.toFixed(6))
+    ].join('|');
+    if (newTrigger !== oldTrigger) {
+      state.triggerSnapshot=null;
+      state.triggerCounter=null;
+      clearAutosetLockedSnapshot();
+      state.triggerStatus=state.triggerEnabled?'AUTO · SEARCHING':'OFF · FREE RUN';
+    }
+    updateTriggerUi();
+
+    // Mark this server configuration as already known locally. This prevents
+    // a browser that merely opened/reloaded from writing the same trigger back.
+    state.triggerLastSentKey=JSON.stringify({
+      enabled:state.triggerEnabled,
+      edge:state.triggerEdge,
+      level_v:Number(state.triggerLevel.toFixed(6)),
+      position:Number(state.triggerPosition.toFixed(6)),
+      window_samples:desiredTriggerWindowSamples(),
+    });
+
+    if (Number.isFinite(generation)) {
+      state.sharedUiGeneration=Math.max(state.sharedUiGeneration,generation);
+    }
+    markDirty(true);
+  }
+
+  async function fetchMpuAnalysis(forceFull=false) {
+    if (state.mpuAnalysisBusy) return;
+
+    state.mpuAnalysisBusy = true;
+
+    try {
+      const needFull = forceFull || state.compareMode === 'frequency';
+      const url = needFull
+        ? '/api/analysis'
+        : '/api/analysis?compact=1';
+
+      const r = await fetch(url,{cache:'no-store'});
+      const j = await r.json();
+
+      if (!r.ok || j.ok === false) {
+        throw new Error(j.error || `HTTP ${r.status}`);
+      }
+
+      state.mpuAnalysis = j;
+      state.mpuAnalysisError = '';
+      state.mpuAnalysisAt = performance.now();
+
+      const afs = Number(j?.acquisition?.fs_hz);
+      if (Number.isFinite(afs) && afs > 0) {
+        state.fs = afs;
+      }
+
+      updateSamplesPerCycle();
+      await consumeMpuAutosetResult();
+
+      state.renderDirty = true;
+      state.compareDirty = true;
+      state.analysisDirty = true;
+      state.spectrumDirty = true;
+
+    } catch(e) {
+      state.mpuAnalysisError = e.message || String(e);
+    } finally {
+      state.mpuAnalysisBusy = false;
+    }
+  }
+
+  async function pollMpuAnalysis() {
+    // Complete HOLD: when both physical channels are stopped, leave the last
+    // MPU analysis snapshot untouched. RUN resumes polling automatically.
+    if (state.dacRunning || state.adcRunning) {
+      await fetchMpuAnalysis(false);
+    }
+
+    setTimeout(
+      pollMpuAnalysis,
+      state.autoset.active
+        ? 100
+        : (state.compareMode === 'frequency'
+            ? MPU_SPECTRUM_POLL_MS
+            : MPU_ANALYSIS_POLL_MS)
+    );
+  }
+
+  let mpuTriggerSyncTimer = null;
+
+  function desiredTriggerWindowSamples() {
+    return Math.max(
+      2,
+      Math.min(
+        32768,
+        Math.round(state.fs * state.adcWindowMs / 1000)
+      )
+    );
+  }
+
+  function triggerResultMatchesLocal(t,requiredGeneration=0) {
+    if (!t) return false;
+
+    const remoteGeneration = Number(t.config_generation) || 0;
+    const required = Number(requiredGeneration) || Number(state.triggerConfigGeneration) || 0;
+
+    if (required > 0 && remoteGeneration < required) return false;
+
+    return (
+      !!t.enabled === !!state.triggerEnabled &&
+      String(t.edge || 'rise') === state.triggerEdge &&
+      Math.abs(Number(t.level_v)-state.triggerLevel) < 0.012 &&
+      Math.abs(Number(t.position)-state.triggerPosition) < 0.002 &&
+      Number(t.window_samples) === desiredTriggerWindowSamples()
+    );
+  }
+
+  async function syncMpuTriggerConfig(immediate=false) {
+    if (mpuTriggerSyncTimer) {
+      clearTimeout(mpuTriggerSyncTimer);
+      mpuTriggerSyncTimer = null;
+    }
+
+    const payload = {
+      enabled: state.triggerEnabled,
+      edge: state.triggerEdge,
+      level_v: Number(state.triggerLevel.toFixed(6)),
+      position: Number(state.triggerPosition.toFixed(6)),
+      window_samples: desiredTriggerWindowSamples(),
+    };
+    const key = JSON.stringify(payload);
+
+    // AUTOSET/manual controls may request a sync repeatedly.  Identical
+    // trigger settings are a no-op and must not create a new generation.
+    if (key === state.triggerLastSentKey) return state.triggerConfigGeneration || 0;
+
+    const send = async() => {
+      try {
+        const j = await post('/api/analysis/trigger',payload);
+        const generation = Number(j?.trigger_config?.generation) || 0;
+        if (generation > 0) state.triggerConfigGeneration = generation;
+        if (j?.ui) applySharedUiState(j.ui);
+        state.triggerLastSentKey = key;
+        return generation;
+      } catch (_) {
+        return 0;
+      }
+    };
+
+    if (immediate) return await send();
+    mpuTriggerSyncTimer = setTimeout(send,60);
+    return 0;
+  }
+
+  function setStatus(text,ok,detail='') {
+    $('statusText').textContent = text;
+    $('statusText').title = detail || '';
+    document.querySelector('.status-dot').style.background =
+      ok ? 'var(--ok)' : 'var(--warn)';
+  }
+
+  function setHealth(text,mode='ok',detail='') {
+    $('health').textContent = text;
+    $('health').title = detail;
+    $('health').parentElement.style.color =
+      mode === 'ok'
+        ? 'var(--ok)'
+        : (mode === 'warn' ? 'var(--warn)' : 'var(--danger)');
+  }
+
+  function clearAcquisition(seq) {
+    ring.clear();
+    if (Number.isFinite(Number(seq))) {
+      state.lastSeq = Number(seq);
+    }
+    state.dataVersion++;
+    state.timeAnalysis = null;
+    state.spectrum = null;
+    markDirty(true);
+  }
+
+  function resetDacEvents(counter, running, p) {
+    state.dacEvents = [{
+      counter: Number(counter) || 0,
+      origin: Number(counter) || 0,
+      running: !!running,
+      p: cloneParams(p),
+    }];
+  }
+
+  function addDacEvent(counter, running, p) {
+    state.dacEvents.push({
+      counter: Number(counter) || 0,
+      origin: Number(counter) || 0,
+      running: !!running,
+      p: cloneParams(p),
+    });
+
+    if (state.dacEvents.length > 64) {
+      state.dacEvents.splice(0, state.dacEvents.length - 64);
+    }
+  }
+
+  function eventForCounter(counter) {
+    for (let i=state.dacEvents.length-1; i>=0; i--) {
+      if (counter >= state.dacEvents[i].counter) {
+        return state.dacEvents[i];
+      }
+    }
+
+    const p = params();
+    return {
+      counter: 0,
+      origin: state.phaseOrigin || 0,
+      running: state.dacRunning,
+      p,
+    };
+  }
+
+  async function applyConfigSnapshot(p,editGeneration) {
+    const rollback = state.lastConfirmedParams
+      ? cloneParams(state.lastConfirmedParams)
+      : null;
+
+    state.configPending++;
+
+    try {
+      const j = await post('/api/config',{
+        waveform: wfCode(p.wf),
+        frequency_hz: p.f,
+        amplitude_v: p.a,
+        offset_v: p.o,
+      });
+
+      const applied = sourceToParams(j.source) || cloneParams(p);
+      const generation = Number(j?.source?.generation);
+
+      if (Number.isFinite(generation)) {
+        state.sourceGeneration = Math.max(
+          state.sourceGeneration,
+          generation
+        );
+      }
+
+      state.lastConfirmedParams = cloneParams(applied);
+      if (state.dacRunning) {
+        state.dacHoldAvailable = true;
+        state.dacHoldParams = cloneParams(applied);
+      }
+      state.phaseOrigin = Number(j.phase_origin) || state.phaseOrigin;
+
+      if (editGeneration === state.configEditGeneration) {
+        setSourceControls(applied);
+      }
+
+      addDacEvent(state.phaseOrigin,state.dacRunning,applied);
+      markDirty(true);
+
+    } catch(e) {
+      if (
+        editGeneration === state.configEditGeneration &&
+        rollback
+      ) {
+        setSourceControls(rollback);
+        state.lastConfirmedParams = cloneParams(rollback);
+        markDirty(true);
+      }
+
+      setStatus('DAC CONFIG ERROR',false,e.message);
+    } finally {
+      state.configPending = Math.max(0,state.configPending-1);
+      flushPendingSource();
+    }
+  }
+
+  function queueConfigCommit() {
+    if (configTimer) {
+      clearTimeout(configTimer);
+      configTimer = null;
+    }
+
+    const p = cloneParams(params());
+    const editGeneration = ++state.configEditGeneration;
+
+    configCommitChain = configCommitChain
+      .then(() => applyConfigSnapshot(p,editGeneration))
+      .catch(() => {});
+  }
+
+
+
+  let noiseCommitTimer = null;
+  let noiseCommitChain = Promise.resolve();
+
+  async function commitNoiseSnapshot(enabled,level,editGeneration) {
+    try {
+      const j = await post('/api/noise',{
+        enabled: !!enabled,
+        level_percent: Math.round(clamp(Number(level),0,100)),
+      });
+
+      const generation = Number(j?.source?.generation);
+      if (Number.isFinite(generation)) {
+        state.sourceGeneration = Math.max(state.sourceGeneration,generation);
+      }
+
+      if (editGeneration === state.noiseEditGeneration) {
+        setNoiseControls(
+          j.noise_enabled ?? enabled,
+          j.noise_level_percent ?? level
+        );
+      }
+      markDirty(false);
+    } catch(e) {
+      setStatus('NOISE CONTROL ERROR',false,e.message);
+    }
+  }
+
+  function queueNoiseCommit(delayMs=75) {
+    if (noiseCommitTimer) clearTimeout(noiseCommitTimer);
+    const enabled = state.noiseEnabled;
+    const level = state.noiseLevel;
+    const generation = ++state.noiseEditGeneration;
+
+    noiseCommitTimer = setTimeout(() => {
+      noiseCommitTimer = null;
+      noiseCommitChain = noiseCommitChain
+        .then(() => commitNoiseSnapshot(enabled,level,generation))
+        .catch(() => {});
+    },Math.max(0,delayMs));
+  }
+
+  function formatSampleRate(fs) {
+    const v = Number(fs);
+    if (!(v > 0)) return '—';
+    return v >= 1000
+      ? (v/1000).toFixed(1) + ' kS/s'
+      : v.toFixed(v < 100 ? 1 : 0) + ' S/s';
+  }
+
+  function updateSamplesPerCycle() {
+    const el = $('samplesPerCycleText');
+    if (!el) return;
+
+    // Oscilloscope sampling quality belongs to CH2, not the CH1/DAC control.
+    // This is essential for an external function generator whose frequency
+    // can be completely independent of the local DAC setting.
+    const m = state.mpuAnalysis?.measurement || {};
+    const f = Number(m.frequency_hz);
+    const periodic = !!m.periodic && Number.isFinite(f) && f > 0;
+    const spc = periodic ? Number(state.fs) / f : NaN;
+
+    if (!(spc > 0)) {
+      el.textContent = '—';
+      return;
+    }
+
+    el.textContent = spc >= 100 ? spc.toFixed(0) : spc.toFixed(1);
+  }
+
+  function updateRunButtons() {
+    $('dacRunBtn').classList.toggle('active',state.dacRunning);
+    $('dacStopBtn').classList.toggle('active',!state.dacRunning);
+    $('adcRunBtn').classList.toggle('active',state.adcRunning);
+    $('adcStopBtn').classList.toggle('active',!state.adcRunning);
+
+    // AUTOSET must never operate on a stopped acquisition.
+    $('autoBtn').disabled = !state.adcRunning;
+
+    const dacHold = !state.dacRunning && !!state.dacHoldAvailable;
+    const adcHold = !state.adcRunning && ring.size > 0;
+
+    $('dacStatusTitle').textContent = state.dacRunning
+      ? 'OUTPUT STATUS · LIVE'
+      : (dacHold ? 'OUTPUT STATUS · HOLD' : 'OUTPUT STATUS');
+
+    $('adcMeasureTitle').textContent = state.adcRunning
+      ? 'MEASURE · LIVE'
+      : (adcHold ? 'MEASURE · HOLD' : 'MEASURE');
+  }
+
+  function updateAnalysisTraceButtons() {
+    $('cmpCh1Toggle').classList.toggle('active',state.showCh1Analysis);
+    $('cmpCh2Toggle').classList.toggle('active',state.showCh2Analysis);
+    $('cmpCh1Label').classList.toggle('trace-hidden',!state.showCh1Analysis);
+    $('cmpCh2Label').classList.toggle('trace-hidden',!state.showCh2Analysis);
+  }
+
+  let samplePollTimer = null;
+  let samplePollInFlight = false;
+  let samplePollGeneration = 0;
+
+  function scheduleSamplePoll(delayMs = 0) {
+    if (document.hidden) return;
+
+    if (samplePollTimer !== null) {
+      clearTimeout(samplePollTimer);
+      samplePollTimer = null;
+    }
+
+    const generation = samplePollGeneration;
+    samplePollTimer = setTimeout(() => {
+      samplePollTimer = null;
+      poll(generation);
+    }, Math.max(0, Number(delayMs) || 0));
+  }
+
+  function resetBrowserLiveView(sequence = null) {
+    clearAcquisition(sequence);
+    state.triggerSnapshot = null;
+    state.triggerCounter = null;
+    state.triggerFraction = 0;
+  }
+
+  function appendRows(rows) {
+    let added = 0;
+
+    for (const row of rows) {
+      const adcV = Number(row.adc) * 3.3 / 16383;
+      const counter = Number(row.counter);
+      const origin = Number(row.phase_origin);
+
+      if (
+        !Number.isFinite(adcV) ||
+        !Number.isFinite(counter) ||
+        !Number.isFinite(origin)
+      ) continue;
+
+      ring.push(adcV, counter, origin);
+      state.lastSeq = Math.max(state.lastSeq, Number(row.seq));
+      state.latestCounter = Math.max(state.latestCounter, counter);
+      state.phaseOrigin = origin;
+      added++;
+    }
+
+    if (added) {
+      state.dataVersion++;
+
+      // Keep an already-locked oscilloscope window stable between MPU trigger
+      // analysis updates. Clearing it on every Bridge batch made a valid lock
+      // visually fall back toward free-run. Explicit trigger/config changes
+      // still clear the snapshot through their own handlers.
+      if (!state.triggerEnabled) {
+        state.triggerSnapshot = null;
+        state.triggerCounter = null;
+      }
+
+      // AUTOSET analysis is owned by the MPU from v16.9 onward.
+      // v19.27: sample arrival invalidates TIME only; FFT redraw waits for a
+      // genuinely new MPU analysis snapshot.
+      markSampleDirty();
+    }
+  }
+
+  async function poll(generation = samplePollGeneration) {
+    if (document.hidden || generation !== samplePollGeneration) return;
+
+    if (samplePollInFlight) {
+      scheduleSamplePoll(10);
+      return;
+    }
+
+    const pollStartedAt = performance.now();
+    samplePollInFlight = true;
+    const latestRequest = !!state.browserResumePending;
+    let forceImmediatePoll = false;
+
+    try {
+      const url = latestRequest
+        ? '/api/samples?latest=1'
+        : '/api/samples?after=' + state.lastSeq;
+      const r = await fetch(url,{cache:'no-store'});
+      const j = await r.json();
+
+      // A response that started before a visibility transition is stale by
+      // definition. Ignore it so old browser history can never be appended
+      // after the live view has already been reset.
+      if (generation !== samplePollGeneration || document.hidden) return;
+
+      state.bridgeOk = !!j.ok;
+      state.bridgeConnecting = !!j.bridge_connecting;
+      state.bridgePollFailures = Number(j.bridge_poll_failures) || 0;
+      state.fs = Number(j.mcu_fs) || 2000;
+      state.displayFps = Number(j.display_fps) || 25;
+      state.adcRunning = !!j.adc_running;
+
+      if (j.source_synced && j.source) {
+        applyServerSource(j.source);
+      } else {
+        state.dacRunning = !!j.dac_running;
+      }
+      if (j.ui) applySharedUiState(j.ui);
+
+      state.phaseOrigin = Number(j.phase_origin) || state.phaseOrigin;
+
+      const polledCounter = Number(j.latest_counter);
+      if (Number.isFinite(polledCounter)) {
+        state.latestCounter = polledCounter;
+      }
+
+      state.dropped = Number(j.dropped_samples) || 0;
+      state.clientMissed = !!j.client_missed;
+
+      // v19.44 LIVE-latency ceiling.  The MPU/server ring remains lossless,
+      // but an oscilloscope browser should not spend seconds replaying stale
+      // display history.  If the client is >1 s behind the server live edge,
+      // discard only browser catch-up playback and ask for latest=1 next.
+      const serverSequence = Number(j.sequence);
+      const liveLagSamples = (
+        Number.isFinite(serverSequence) && state.lastSeq >= 0
+      ) ? Math.max(0,serverSequence-state.lastSeq) : 0;
+      const liveLagLimitSamples = Math.max(
+        512,Math.round(state.fs*BROWSER_LIVE_LAG_MAX_S)
+      );
+      const liveLagExceeded = (
+        !latestRequest &&
+        !state.clientMissed &&
+        state.lastSeq >= 0 &&
+        liveLagSamples > liveLagLimitSamples
+      );
+
+      $('adcFixedRateText').textContent = formatSampleRate(state.fs);
+      $('adcSpecInline').textContent =
+        `14-bit · 0–16383 · 0–3.3 V · LSB ≈ 0.201 mV · ${formatSampleRate(state.fs)}`;
+      $('nyquistNote').textContent = `ADC Nyquist = ${(state.fs/2).toFixed(0)} Hz · DAC range = 1–100 Hz`;
+      updateSamplesPerCycle();
+      updateRunButtons();
+
+      if (j.ok) {
+        if (!state.dacRunning && !state.adcRunning) {
+          setStatus('HARDWARE · READY · DAC / ADC STOPPED',true);
+        } else if (state.dacRunning && state.adcRunning) {
+          setStatus('HARDWARE · DAC / ADC ACTIVE',true);
+        } else if (state.dacRunning) {
+          setStatus('HARDWARE · DAC ACTIVE · ADC STOPPED',true);
+        } else {
+          setStatus('HARDWARE · DAC STOPPED · ADC ACTIVE',true);
+        }
+
+        // v19.23: browser resume and stale-client resync replace local history
+        // with the newest block. Historical server data remains available to
+        // MPU analysis; only the live browser display skips catch-up playback.
+        if (latestRequest) {
+          state.browserResumePending = false;
+          resetBrowserLiveView(j.sequence);
+        } else if (state.clientMissed) {
+          resetBrowserLiveView(j.sequence);
+          setHealth(
+            'BUFFER RESYNC',
+            'warn',
+            'Browser fell behind the server ring and jumped directly to the latest live samples; historical catch-up was skipped.'
+          );
+        } else if (liveLagExceeded) {
+          // Do not append this stale <=512-row catch-up block. Keep the last
+          // visible frame for a few milliseconds and immediately request the
+          // newest 512 rows; the following latest=1 response atomically resets
+          // the browser ring and returns the display to the live edge.
+          state.browserResumePending = true;
+          forceImmediatePoll = true;
+          setHealth(
+            'LIVE RESYNC',
+            'warn',
+            `Browser display lag reached ${(liveLagSamples/state.fs).toFixed(2)} s; stale browser-only history was skipped.`
+          );
+        }
+
+        if (
+          !liveLagExceeded &&
+          Array.isArray(j.samples) &&
+          j.samples.length
+        ) {
+          appendRows(j.samples);
+        }
+      } else if (state.bridgeConnecting) {
+        setStatus(
+          'HARDWARE · CONNECTING',
+          false,
+          j.error || `Bridge startup/poll retry ${state.bridgePollFailures}`
+        );
+      } else {
+        setStatus(
+          'BRIDGE ERROR',
+          false,
+          j.error || `Bridge polling failed ${state.bridgePollFailures} times`
+        );
+      }
+
+    } catch(e) {
+      if (generation === samplePollGeneration && !document.hidden) {
+        setStatus('SERVER CONNECTION ERROR',false,e.message);
+      }
+    } finally {
+      samplePollInFlight = false;
+
+      if (!document.hidden) {
+        // v19.27 fixed-cadence polling: target the display period from the
+        // START of the previous request. A slow HTTP response therefore does
+        // not add another full 40 ms sleep before recovery.
+        const targetPeriod = 1000 / Math.max(1,state.displayFps || 25);
+        const elapsed = performance.now() - pollStartedAt;
+        const delay = generation === samplePollGeneration
+          ? (forceImmediatePoll
+              ? 0
+              : Math.max(0,targetPeriod - elapsed))
+          : 0;
+        scheduleSamplePoll(delay);
+      }
+    }
+  }
+
+  function waveformUnit(phase,wf) {
+    if (wf === 'dc') return 0;
+
+    phase = ((phase % 1) + 1) % 1;
+
+    if (wf === 'sine') return Math.sin(2*Math.PI*phase);
+    if (wf === 'square') return phase < 0.5 ? 1 : -1;
+    if (wf === 'triangle') return 1 - 4*Math.abs(phase - 0.5);
+
+    return 0;
+  }
+
+  function refFromEvent(counter,event) {
+    if (!event.running) return 0;
+
+    const p = event.p;
+
+    if (p.wf === 'dc') {
+      return clamp(p.o,0,3.3);
+    }
+
+    const phase = (counter - event.origin) * p.f / state.fs;
+
+    return clamp(
+      p.o + p.a * waveformUnit(phase,p.wf),
+      0,
+      3.3
+    );
+  }
+
+  function refAtCounter(counter) {
+    return refFromEvent(counter,eventForCounter(counter));
+  }
+
+  function visibleCount(windowMs=state.adcWindowMs) {
+    return Math.min(
+      ring.size,
+      Math.max(2,Math.round(state.fs * windowMs / 1000))
+    );
+  }
+
+  function latestWindowSnapshot(n) {
+    n = Math.min(ring.size,n);
+    if (n <= 0) return null;
+
+    const adc = new Float32Array(n);
+    const counter = new Uint32Array(n);
+    const origin = new Uint32Array(n);
+    const start = ring.size-n;
+
+    for (let i=0;i<n;i++) {
+      const s = ring.getOldestOffset(start+i);
+      adc[i] = s.adc;
+      counter[i] = s.counter;
+      origin[i] = s.origin;
+    }
+
+    return {adc,counter,origin,n,triggerIndex:null,triggerFraction:0};
+  }
+
+  function clearAutosetLockedSnapshot() {
+    state.autoset.lockedSnapshot = null;
+    state.autoset.lockedFrequencyHz = null;
+    state.autoset.lockedVppV = null;
+  }
+
+  function autosetLockedSnapshotStillMatchesSignal() {
+    const a = state.autoset;
+    if (!a.lockedSnapshot) return false;
+
+    const m = state.mpuAnalysis?.measurement || {};
+    const f = Number(m.frequency_hz);
+    const vpp = Number(m.vpp_v);
+    const lf = Number(a.lockedFrequencyHz);
+    const lvpp = Number(a.lockedVppV);
+
+    // Keep the post-AUTOSET frame visually stationary, but release it if the
+    // measured source itself changes. This avoids turning AUTOSET into a stale
+    // permanent HOLD when an external generator is adjusted.
+    if (Number.isFinite(f) && Number.isFinite(lf) && lf > 0) {
+      if (Math.abs(f-lf) > Math.max(0.5,0.02*lf)) return false;
+    }
+    if (Number.isFinite(vpp) && Number.isFinite(lvpp) && lvpp > 0.05) {
+      if (Math.abs(vpp-lvpp) > Math.max(0.05,0.08*lvpp)) return false;
+    }
+    return true;
+  }
+
+  function triggerMeasuredPeriodSamples() {
+    const m = state.mpuAnalysis?.measurement || {};
+    const f = Number(m.frequency_hz);
+    if (!m.periodic || !Number.isFinite(f) || f <= 0) return null;
+    return state.fs / f;
+  }
+
+  function retainTriggerLockOrFreeRun(n,post) {
+    if (!state.triggerSnapshot || !Number.isFinite(Number(state.triggerCounter))) {
+      state.triggerSnapshot = null;
+      state.triggerCounter = null;
+      state.triggerStatus = 'AUTO · FREE RUN';
+      return;
+    }
+
+    const periodSamples = triggerMeasuredPeriodSamples();
+    const latestCounter = Number(state.latestCounter) || 0;
+    const lockCounter = Number(state.triggerCounter) || 0;
+    const postSamples = Math.max(0,Number(post)||0);
+
+    // Enough time for the next real edge plus the post-trigger display region.
+    // At high frequency the lower bound prevents needless lock chatter.
+    const timeoutSamples = periodSamples
+      ? Math.max(0.5*state.fs, postSamples + 1.25*periodSamples)
+      : Math.max(0.75*state.fs, postSamples + 0.5*state.fs);
+
+    if (latestCounter > 0 && lockCounter > 0 && latestCounter-lockCounter > timeoutSamples) {
+      state.triggerSnapshot = null;
+      state.triggerCounter = null;
+      state.triggerFraction = 0;
+      state.triggerStatus = 'AUTO · FREE RUN';
+      return;
+    }
+
+    // Keep the last valid phase reference until a genuinely new edge arrives.
+    // The browser still renders at 25 fps and ADC acquisition continues.
+    state.triggerStatus=`AUTO · ${state.triggerEdge==='rise'?'↑':'↓'} ${state.triggerLevel.toFixed(2)} V · LOCKED`;
+  }
+
+  function refreshTriggerSnapshot() {
+    const n = visibleCount();
+
+    if (!state.triggerEnabled || n < 8 || ring.size < n) {
+      state.triggerSnapshot = null;
+      state.triggerCounter = null;
+      state.triggerFraction = 0;
+      state.triggerStatus = state.triggerEnabled ? 'AUTO · FREE RUN' : 'OFF · FREE RUN';
+      return;
+    }
+
+    const pre = Math.max(1,Math.floor(n*state.triggerPosition));
+    const post = n-pre-1;
+    const latestCandidate = ring.size-post-1;
+    const earliestCandidate = Math.max(1,pre);
+
+    if (latestCandidate < earliestCandidate) {
+      retainTriggerLockOrFreeRun(n,post);
+      return;
+    }
+
+    const searchStart = Math.max(earliestCandidate,latestCandidate-2048+1);
+    let localMin = Infinity;
+    let localMax = -Infinity;
+    for (let i=Math.max(0,searchStart-1);i<=latestCandidate;i++) {
+      const v=ring.getOldestOffset(i).adc;
+      if (v<localMin) localMin=v;
+      if (v>localMax) localMax=v;
+    }
+    const localVpp = Number.isFinite(localMin)&&Number.isFinite(localMax)
+      ? Math.max(0,localMax-localMin) : 0;
+    const hyst = clamp(0.03*localVpp,0.010,0.080);
+    const low = state.triggerLevel-hyst;
+    const high = state.triggerLevel+hyst;
+
+    // Adaptive holdoff uses CH2's measured period only.  It never borrows the
+    // known DAC frequency because CH2 may be driven by an external source.
+    const periodSamples = triggerMeasuredPeriodSamples();
+    const holdoffSamples = periodSamples ? 0.35*periodSamples : 0;
+    const priorCounter = Number(state.triggerCounter);
+
+    let found=-1;
+    let frac=0;
+    let foundCounter=null;
+    let prev=ring.getOldestOffset(searchStart-1).adc;
+    let armed = state.triggerEdge==='rise' ? prev<=low : prev>=high;
+
+    for (let i=searchStart;i<=latestCandidate;i++) {
+      const cur=ring.getOldestOffset(i).adc;
+      let crossed=false;
+      let candidateFrac=0;
+
+      if (state.triggerEdge==='rise') {
+        if (!armed) {
+          if (cur<=low) armed=true;
+        } else if (cur>=high) {
+          crossed=true;
+          const denom=cur-prev;
+          candidateFrac=(prev<state.triggerLevel && state.triggerLevel<=cur && Math.abs(denom)>1e-12)
+            ? clamp((state.triggerLevel-prev)/denom,0,1) : 0;
+          armed=false;
+        }
+      } else {
+        if (!armed) {
+          if (cur>=high) armed=true;
+        } else if (cur<=low) {
+          crossed=true;
+          const denom=cur-prev;
+          candidateFrac=(prev>state.triggerLevel && state.triggerLevel>=cur && Math.abs(denom)>1e-12)
+            ? clamp((state.triggerLevel-prev)/denom,0,1) : 0;
+          armed=false;
+        }
+      }
+
+      if (crossed) {
+        const candidate = ring.getOldestOffset(i);
+        const candidateCounter = Number(candidate.counter) + candidateFrac;
+        const isNewEnough = !Number.isFinite(priorCounter) || priorCounter <= 0 ||
+          candidateCounter > priorCounter + holdoffSamples;
+
+        if (isNewEnough) {
+          found=i;
+          frac=candidateFrac;
+          foundCounter=candidateCounter;
+        }
+      }
+      prev=cur;
+    }
+
+    if (found<0) {
+      retainTriggerLockOrFreeRun(n,post);
+      return;
+    }
+
+    const start=found-pre;
+    if (start<0 || start+n>ring.size) {
+      retainTriggerLockOrFreeRun(n,post);
+      return;
+    }
+
+    const adc=new Float32Array(n);
+    const counter=new Uint32Array(n);
+    const origin=new Uint32Array(n);
+    for (let i=0;i<n;i++) {
+      const sample=ring.getOldestOffset(start+i);
+      adc[i]=sample.adc;
+      counter[i]=sample.counter;
+      origin[i]=sample.origin;
+    }
+
+    const trigSample=ring.getOldestOffset(found);
+    state.triggerSnapshot={adc,counter,origin,n,triggerIndex:pre,triggerFraction:frac};
+    state.triggerCounter=Number.isFinite(foundCounter) ? foundCounter : Number(trigSample.counter);
+    state.triggerFraction=frac;
+    state.triggerLockUpdatedAt=performance.now();
+    state.triggerStatus=`AUTO · ${state.triggerEdge==='rise'?'↑':'↓'} ${state.triggerLevel.toFixed(2)} V · LOCKED`;
+  }
+
+  function timeWindow() {
+    refreshTriggerSnapshot();
+    $('triggerStatus').textContent = state.triggerStatus;
+    if (state.triggerSnapshot) return state.triggerSnapshot;
+
+    if (state.autoset.freezeSnapshot) {
+      return state.autoset.freezeSnapshot;
+    }
+
+    return latestWindowSnapshot(visibleCount());
+  }
+
+  function updateTriggerUi() {
+    $('trigRiseBtn').classList.toggle('active',state.triggerEdge==='rise');
+    $('trigFallBtn').classList.toggle('active',state.triggerEdge==='fall');
+    $('trigOnBtn').classList.toggle('active',state.triggerEnabled);
+    $('trigOffBtn').classList.toggle('active',!state.triggerEnabled);
+    $('triggerStatus').textContent = state.triggerStatus;
+  }
+
+  function currentReferenceAt(counter) {
+    const p = params();
+
+    if (!state.dacRunning) return 0;
+    if (p.wf === 'dc') return clamp(p.o,0,3.3);
+
+    const phase = (counter - state.phaseOrigin) * p.f / state.fs;
+
+    return clamp(
+      p.o + p.a * waveformUnit(phase,p.wf),
+      0,
+      3.3
+    );
+  }
+
+  function fitCanvas(ctx) {
+    const c = ctx.canvas;
+    const r = c.getBoundingClientRect();
+    const dpr = Math.max(1,window.devicePixelRatio || 1);
+    const w = Math.max(10,Math.floor(r.width*dpr));
+    const h = Math.max(10,Math.floor(r.height*dpr));
+
+    if (c.width !== w || c.height !== h) {
+      c.width = w;
+      c.height = h;
+    }
+
+    return {w,h,dpr};
+  }
+
+  function voltageGrid(ctx,lo,hi) {
+    const {w,h,dpr} = fitCanvas(ctx);
+
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = '#091017';
+    ctx.fillRect(0,0,w,h);
+    ctx.lineWidth = dpr;
+
+    for (let i=0;i<=10;i++) {
+      const x = i*w/10;
+      ctx.strokeStyle = i===5 ? '#7694a5' : '#426170';
+      ctx.lineWidth = (i===5 ? 1.15 : 1.0)*dpr;
+      ctx.beginPath();
+      ctx.moveTo(x,0);
+      ctx.lineTo(x,h);
+      ctx.stroke();
+    }
+
+    for (let j=0;j<=8;j++) {
+      const y = j*h/8;
+      ctx.strokeStyle = j===4 ? '#7694a5' : '#426170';
+      ctx.lineWidth = (j===4 ? 1.15 : 1.0)*dpr;
+      ctx.beginPath();
+      ctx.moveTo(0,y);
+      ctx.lineTo(w,y);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = '#eef4f8';
+    ctx.font = `${9*dpr}px Segoe UI, Arial`;
+    ctx.textAlign = 'left';
+
+    for (let j=0;j<=4;j++) {
+      const y = j*h/4;
+      const v = hi - (hi-lo)*j/4;
+      ctx.fillText(v.toFixed(2)+' V',6*dpr,Math.max(12*dpr,y+11*dpr));
+    }
+  }
+
+  function spectrumX(freq,maxHz,minHz,mode,w) {
+    if (!(freq >= minHz) || freq > maxHz) return null;
+
+    if (mode === 'log') {
+      if (!(freq > 0)) return null;
+      const lo = Math.log10(minHz);
+      const hi = Math.log10(maxHz);
+      return (Math.log10(freq)-lo)/(hi-lo)*w;
+    }
+
+    return (freq-minHz)/(maxHz-minHz)*w;
+  }
+
+  function formatHz(freq) {
+    if (freq >= 1000) {
+      const k = freq/1000;
+      return (Math.abs(k-Math.round(k)) < 1e-6 ? k.toFixed(0) : k.toFixed(1))+' kHz';
+    }
+    if (freq < 1) return Number(freq.toFixed(2)).toString()+' Hz';
+    return freq.toFixed(0)+' Hz';
+  }
+
+  function formatAmp(v) {
+    if (v < 0.01) return (v*1000).toFixed(1)+' mV';
+    if (v < 0.1) return v.toFixed(3)+' V';
+    return v.toFixed(2)+' V';
+  }
+
+  function ampToDbv(v) {
+    if (!(v > 0)) return SPECTRUM_DB_MIN;
+    return clamp(20*Math.log10(v),SPECTRUM_DB_MIN,SPECTRUM_DB_MAX);
+  }
+
+  function dbvToY(db,h) {
+    const v = clamp(db,SPECTRUM_DB_MIN,SPECTRUM_DB_MAX);
+    return (SPECTRUM_DB_MAX-v)/(SPECTRUM_DB_MAX-SPECTRUM_DB_MIN)*h;
+  }
+
+  function spectrumPlotHeight(h,dpr) {
+    // Dedicated band below the X-axis for frequency labels.
+    return Math.max(20*dpr,h-20*dpr);
+  }
+
+  function niceAmplitudeMax(v) {
+    if (!(v > 0)) return 1.0;
+    const padded = v*1.12;
+    const exp = Math.pow(10,Math.floor(Math.log10(padded)));
+    const norm = padded/exp;
+    const steps = [1,1.25,1.5,2,2.5,3,4,5,7.5,10];
+    const step = steps.find(x => norm <= x) || 10;
+    return step*exp;
+  }
+
+  function niceFrequencyMax(v) {
+    if (!(v > 0)) return 1000;
+    const exp = Math.pow(10,Math.floor(Math.log10(v)));
+    const norm = v/exp;
+    const step = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+    return step*exp;
+  }
+
+  function drawNyquistMarker(ctx,maxHz,minHz,mode,plotH=null) {
+    const nyquist = state.fs/2;
+    if (nyquist <= 0 || nyquist > maxHz) return;
+
+    const w = ctx.canvas.width;
+    const h = ctx.canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    const ph = plotH ?? spectrumPlotHeight(h,dpr);
+    const x = spectrumX(nyquist,maxHz,minHz,mode,w);
+    if (x === null) return;
+
+    ctx.save();
+    ctx.strokeStyle = '#667783';
+    ctx.lineWidth = 1*dpr;
+    ctx.setLineDash([4*dpr,4*dpr]);
+    ctx.beginPath();
+    ctx.moveTo(x,0);
+    ctx.lineTo(x,ph);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#d8e1ea';
+    ctx.font = `${7.5*dpr}px Segoe UI, Arial`;
+    ctx.textAlign = 'right';
+    ctx.fillText('NYQ '+formatHz(nyquist),Math.max(55*dpr,x-4*dpr),12*dpr);
+    ctx.restore();
+  }
+
+  function spectrumGrid(ctx,maxHz,minHz,mode,showNyquist=true) {
+    const {w,h,dpr} = fitCanvas(ctx);
+    const plotH = spectrumPlotHeight(h,dpr);
+
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = '#091017';
+    ctx.fillRect(0,0,w,h);
+    ctx.lineWidth = dpr;
+
+    if (mode === 'log') {
+      // Bode-style true logarithmic grid:
+      // each decade has equal width, and 2..9 are logarithmically spaced.
+      const minPow = Math.floor(Math.log10(minHz));
+      const maxPow = Math.ceil(Math.log10(maxHz));
+
+      for (let p=minPow;p<=maxPow;p++) {
+        const decade = Math.pow(10,p);
+
+        for (let m=1;m<=9;m++) {
+          const f = decade*m;
+          if (f < minHz || f > maxHz) continue;
+
+          const rawX = spectrumX(f,maxHz,minHz,'log',w);
+          // Keep the maximum-decade major line (10 kHz) fully inside the
+          // canvas. At x===w half of a 1 px stroke is clipped, making the
+          // final decade look weaker than the other major grid lines.
+          const x = (m===1 && Math.abs(f-maxHz) <= Math.max(1e-12,maxHz*1e-12))
+            ? w - 0.5*dpr
+            : rawX;
+          ctx.strokeStyle =
+            m===1 ? '#86a3b3' :
+            (m===2 || m===5 ? '#64808f' : '#456270');
+
+          ctx.beginPath();
+          ctx.moveTo(x,0);
+          ctx.lineTo(x,plotH);
+          ctx.stroke();
+        }
+      }
+    } else {
+      for (let i=0;i<=8;i++) {
+        const x = i*w/8;
+        ctx.strokeStyle = i===4 ? '#86a3b3' : '#526f7d';
+        ctx.beginPath();
+        ctx.moveTo(x,0);
+        ctx.lineTo(x,plotH);
+        ctx.stroke();
+      }
+    }
+
+    // Fixed dBV Y axis: +12 to -60 dBV, 12 dB per major step.
+    const dbTicks = [12,0,-12,-24,-36,-48,-60];
+
+    for (const db of dbTicks) {
+      const y = dbvToY(db,plotH);
+      ctx.strokeStyle = db===0 ? '#86a3b3' : '#526f7d';
+      ctx.beginPath();
+      ctx.moveTo(0,y);
+      ctx.lineTo(w,y);
+      ctx.stroke();
+    }
+
+    // Explicit X-axis baseline. Labels live in the band below it.
+    ctx.strokeStyle = '#8ca3b0';
+    ctx.lineWidth = 1*dpr;
+    ctx.beginPath();
+    ctx.moveTo(0,plotH);
+    ctx.lineTo(w,plotH);
+    ctx.stroke();
+
+    // Bright graph labels.
+    ctx.fillStyle = '#f4f8fb';
+    ctx.font = `600 ${9*dpr}px Segoe UI, Arial`;
+    ctx.textAlign = 'left';
+
+    const yLabelX = 24*dpr;
+
+    for (const db of dbTicks) {
+      const y = dbvToY(db,plotH);
+      const label = (db>0?'+':'')+db+' dBV';
+
+      // Keep the floor label just above the X-axis baseline.
+      const ty = db===SPECTRUM_DB_MIN
+        ? plotH-6*dpr
+        : Math.max(12*dpr,Math.min(plotH-7*dpr,y+11*dpr));
+
+      ctx.fillText(label,yLabelX,ty);
+    }
+
+    const xLabelY = Math.min(h-4*dpr,plotH+14*dpr);
+
+    if (mode === 'log') {
+      const minPow = Math.ceil(Math.log10(minHz)-1e-12);
+      const maxPow = Math.floor(Math.log10(maxHz)+1e-12);
+
+      for (let p=minPow;p<=maxPow;p++) {
+        const f = Math.pow(10,p);
+        if (f < minHz || f > maxHz) continue;
+
+        const x = spectrumX(f,maxHz,minHz,'log',w);
+        let tx = x;
+
+        if (x < 28*dpr) {
+          ctx.textAlign = 'left';
+          tx = 8*dpr;
+        } else if (x > w-28*dpr) {
+          ctx.textAlign = 'right';
+          tx = w-8*dpr;
+        } else {
+          ctx.textAlign = 'center';
+        }
+
+        ctx.fillText(formatHz(f),tx,xLabelY);
+      }
+    } else {
+      for (let i=0;i<=4;i++) {
+        const x = i*w/4;
+        const hz = minHz + (maxHz-minHz)*i/4;
+
+        if (i===0) ctx.textAlign='left';
+        else if (i===4) ctx.textAlign='right';
+        else ctx.textAlign='center';
+
+        const tx = i===0 ? 8*dpr : (i===4 ? w-8*dpr : x);
+        ctx.fillText(formatHz(hz),tx,xLabelY);
+      }
+    }
+
+    if (showNyquist) drawNyquistMarker(ctx,maxHz,minHz,mode,plotH);
+  }
+
+  function paddedVoltageScale(lo,hi,minSpan=0.16) {
+    lo = clamp(Number(lo),0,3.3);
+    hi = clamp(Number(hi),0,3.3);
+
+    if (!(hi > lo)) {
+      const c = clamp((lo+hi)/2 || 1.65,0,3.3);
+      lo = c-minSpan/2;
+      hi = c+minSpan/2;
+    }
+
+    let span = hi-lo;
+    const pad = Math.max(0.01,span*0.12);
+    lo -= pad;
+    hi += pad;
+
+    const center = (lo+hi)/2;
+    if (hi-lo < minSpan) {
+      lo = center-minSpan/2;
+      hi = center+minSpan/2;
+    }
+
+    if (lo < 0) {
+      hi += -lo;
+      lo = 0;
+    }
+    if (hi > 3.3) {
+      lo -= hi-3.3;
+      hi = 3.3;
+    }
+
+    return {
+      lo:clamp(lo,0,3.3),
+      hi:clamp(hi,0,3.3),
+    };
+  }
+
+  function analysisRequestedSource() {
+    return state.mpuAnalysis?.requested || null;
+  }
+
+  function analysisDacAvailable() {
+    const r = analysisRequestedSource();
+    if (r && (r.available !== undefined || r.running !== undefined)) {
+      return !!(r.available ?? r.running);
+    }
+    return !!(state.dacRunning || state.dacHoldAvailable);
+  }
+
+  function analysisDacHeld() {
+    const r = analysisRequestedSource();
+    if (r && r.hold !== undefined) return !!r.hold;
+    return !state.dacRunning && !!state.dacHoldAvailable;
+  }
+
+  function analysisDacParams() {
+    const r = analysisRequestedSource();
+    if (r && (r.available ?? r.running)) {
+      return {
+        wf: String(r.waveform || 'dc'),
+        f: Number(r.frequency_hz) || 0,
+        a: Number(r.amplitude_v) || 0,
+        o: Number(r.offset_v) || 0,
+      };
+    }
+    return state.dacHoldParams ? cloneParams(state.dacHoldParams) : params();
+  }
+
+  function voltageScaleForParams(p) {
+    const lo = p.wf==='dc' ? p.o : clamp(p.o-p.a,0,3.3);
+    const hi = p.wf==='dc' ? p.o : clamp(p.o+p.a,0,3.3);
+    return paddedVoltageScale(lo,hi,0.16);
+  }
+
+  function getDacVoltageScale() {
+    // v19.28 Function Generator preview: keep the physical DAC range fixed so
+    // amplitude changes alter the visible waveform height and offset changes
+    // alter its vertical position instead of rescaling the Y axis.
+    return {lo:0,hi:3.3};
+  }
+
+  function getOscVoltageScale() {
+    if (!state.auto || !state.autoScale) {
+      return {lo:0,hi:3.3};
+    }
+    return {
+      lo:Number(state.autoScale.lo),
+      hi:Number(state.autoScale.hi),
+    };
+  }
+
+  function getComparisonVoltageScale(dacScale,oscScale) {
+    const hasDAC = analysisDacAvailable();
+    const hasADC = ring.size > 0;
+    const analysisDacScale = hasDAC
+      ? voltageScaleForParams(analysisDacParams())
+      : dacScale;
+
+    if (hasDAC && hasADC) {
+      return paddedVoltageScale(
+        Math.min(analysisDacScale.lo,oscScale.lo),
+        Math.max(analysisDacScale.hi,oscScale.hi),
+        0.16
+      );
+    }
+    if (hasDAC) return analysisDacScale;
+    if (hasADC) return oscScale;
+    return {lo:0,hi:3.3};
+  }
+
+  function nearestTimeDivIndex(targetMs) {
+    let best = 0;
+    let bestError = Infinity;
+
+    for (let i=0;i<TIME_DIVS.length;i++) {
+      const err = Math.abs(Math.log(TIME_DIVS[i]/Math.max(targetMs,1e-9)));
+
+      if (err < bestError) {
+        bestError = err;
+        best = i;
+      }
+    }
+
+    return best;
+  }
+
+  function setAutosetMessage(text,mode='ok',detail='',durationMs=1800) {
+    state.autoset.message = text;
+    state.autoset.mode = mode;
+    state.autoset.detail = detail;
+    state.autoset.messageUntil = performance.now()+durationMs;
+    markDirty(false);
+  }
+
+  function autosetHealthOverride() {
+    const a = state.autoset;
+
+    if (a.active) {
+      const m = state.mpuAnalysis?.autoset;
+      const sameRequest = m && Number(m.request_id) === Number(a.requestId);
+      const count = sameRequest ? Number(m.fresh_samples || 0) : 0;
+      const target = sameRequest
+        ? Math.max(1,Number(m.target_samples || a.minSamples || 1))
+        : Math.max(1,a.minSamples || 1);
+      setHealth('AUTOSET · ONE SHOT','warn',`${count}/${target} fresh samples · best effort`);
+      return true;
+    }
+
+    if (a.messageUntil > performance.now()) {
+      setHealth(a.message,a.mode,a.detail);
+      return true;
+    }
+    return false;
+  }
+
+  async function applyMpuAutosetRecommendation(rec) {
+    if (!rec) return false;
+
+    const lo=Number(rec.vertical_lo_v);
+    const hi=Number(rec.vertical_hi_v);
+    if (!Number.isFinite(lo)||!Number.isFinite(hi)||!(hi>lo)) return false;
+
+    $('autoBtn').classList.remove('active','autoset-press');
+    setVerticalMode(true,{lo,hi},false);
+
+    const triggerUpdate = typeof rec.trigger_enabled === 'boolean';
+    if (triggerUpdate) {
+      state.triggerEnabled=!!rec.trigger_enabled;
+      if (rec.trigger_edge==='rise'||rec.trigger_edge==='fall') {
+        state.triggerEdge=rec.trigger_edge;
+      }
+      if (Number.isFinite(Number(rec.trigger_level_v))) {
+        setTriggerLevel(Number(rec.trigger_level_v),false);
+      }
+    }
+
+    const td=Number(rec.time_div_ms);
+    if (Number.isFinite(td)&&td>0) {
+      const idx=TIME_DIVS.findIndex(v=>Math.abs(v-td)<1e-9);
+      if (idx>=0) updateAdcTimebase(idx,false);
+    }
+
+    state.triggerSnapshot=null;
+    state.triggerCounter=null;
+    state.triggerStatus=state.triggerEnabled?'AUTO · SEARCHING':'OFF · FREE RUN';
+    updateTriggerUi();
+
+    // Dedupe in syncMpuTriggerConfig() means an already-identical ON trigger
+    // receives no new command/generation when AUTOSET is pressed again.
+    await syncMpuTriggerConfig(true);
+    await postSharedUi({
+      vertical_auto:true,
+      vertical_lo_v:lo,
+      vertical_hi_v:hi,
+      adc_time_div_ms:state.adcTimeDivMs,
+    });
+    markDirty(true);
+    return true;
+  }
+
+  async function consumeMpuAutosetResult() {
+    const a=state.autoset;
+    const m=state.mpuAnalysis?.autoset;
+    if (!a.active||!m) return;
+    if (Number(m.request_id)!==Number(a.requestId)) return;
+    if (!m.complete) return;
+
+    const ok=await applyMpuAutosetRecommendation(m.recommendation);
+    a.active=false;
+    a.phase='idle';
+    a.freezeSnapshot=null;
+
+    if (m.status==='locked'&&ok) {
+      const f=Number(m?.stats?.frequency_hz);
+      setAutosetMessage(
+        'AUTOSET · DONE','ok',
+        Number.isFinite(f)
+          ? `${f.toFixed(f<10?2:1)} Hz · vertical/timebase/trigger applied`
+          : 'Best-effort settings applied',
+        1600
+      );
+      return;
+    }
+
+    if (m.status==='vertical_fit'&&ok) {
+      setAutosetMessage(
+        'AUTOSET · VERTICAL ONLY','warn',
+        m.reason||'Frequency/trigger uncertain · existing timebase/trigger preserved',
+        1800
+      );
+      return;
+    }
+
+    if (m.status==='no_signal') {
+      setAutosetMessage('AUTOSET · NO ADC DATA','warn',m.reason||'No fresh ADC samples.',1800);
+      return;
+    }
+
+    if (m.status==='cancelled') {
+      setAutosetMessage('AUTOSET · CANCELLED','warn',m.reason||'AUTOSET cancelled.',1400);
+    }
+  }
+
+  async function runOscilloscopeAutoset() {
+    const token = ++state.autoset.token;
+
+    if (!state.adcRunning) {
+      state.autoset.active = false;
+      state.autoset.phase = 'idle';
+
+      setAutosetMessage(
+        'AUTOSET · ADC STOPPED',
+        'warn',
+        'Start ADC acquisition before AUTOSET.',
+        2200
+      );
+      return;
+    }
+
+    state.autoset.active = true;
+    state.autoset.phase = 'acquiring';
+    state.autoset.messageUntil = 0;
+    state.autoset.recommendationApplied = false;
+    state.autoset.lockStartedAt = 0;
+    state.autoset.triggerConfigGeneration = 0;
+    state.autoset.lastLockRetryAt = 0;
+    clearAutosetLockedSnapshot();
+    state.autoset.freezeSnapshot = null;
+    markDirty(false);
+
+    try {
+      const j = await post('/api/analysis/autoset',{
+        time_div_ms: state.adcTimeDivMs,
+      });
+
+      if (token !== state.autoset.token || !state.autoset.active) return;
+
+      state.autoset.requestId = Number(j.request_id) || 0;
+      state.autoset.startCounter = Number(j.start_counter) || 0;
+      state.autoset.minSamples = Number(j.target_samples) || 512;
+      state.autoset.maxWaitMs = Number(j.max_wait_ms) || 500;
+      state.autoset.startedAt = performance.now();
+
+      await fetchMpuAnalysis(false);
+      markDirty(true);
+
+    } catch(e) {
+      state.autoset.active = false;
+      state.autoset.phase = 'idle';
+
+      setAutosetMessage(
+        'AUTOSET · MPU ERROR',
+        'warn',
+        e.message || String(e),
+        2200
+      );
+    }
+  }
+
+  function timeAxisBounds(wv) {
+    const spanSamples = state.adcWindowMs/1000*state.fs;
+
+    if (wv && wv.n) {
+      if (wv.triggerIndex !== null && wv.triggerIndex > 0) {
+        const i = wv.triggerIndex;
+        const c0 = Number(wv.counter[i-1]);
+        const c1 = Number(wv.counter[i]);
+        const triggerCounter =
+          c0 + wv.triggerFraction*(c1-c0);
+        const startCounter =
+          triggerCounter - state.triggerPosition*spanSamples;
+
+        return {
+          startCounter,
+          endCounter:startCounter+spanSamples,
+          triggerCounter,
+        };
+      }
+
+      const endCounter = Number(wv.counter[wv.n-1]);
+      return {
+        startCounter:endCounter-spanSamples,
+        endCounter,
+        triggerCounter:null,
+      };
+    }
+
+    const endCounter =
+      state.latestCounter || Math.round(spanSamples);
+    return {
+      startCounter:endCounter-spanSamples,
+      endCounter,
+      triggerCounter:null,
+    };
+  }
+
+  function drawTriggerMarker(ctx,bounds) {
+    if (bounds.triggerCounter === null) return;
+
+    const w = ctx.canvas.width;
+    const h = ctx.canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    const span = bounds.endCounter-bounds.startCounter;
+    if (!(span > 0)) return;
+
+    const tx =
+      (bounds.triggerCounter-bounds.startCounter)/span*w;
+
+    ctx.save();
+    ctx.strokeStyle = '#a7b3bd';
+    ctx.lineWidth = 1*dpr;
+    ctx.setLineDash([4*dpr,4*dpr]);
+    ctx.beginPath();
+    ctx.moveTo(tx,0);
+    ctx.lineTo(tx,h);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = '#c4ced6';
+    ctx.font = `${8*dpr}px Segoe UI, Arial`;
+    ctx.textAlign = 'left';
+    ctx.fillText('T',Math.min(w-10*dpr,tx+4*dpr),12*dpr);
+    ctx.restore();
+  }
+
+  function idealPreviewValue(tSec,p) {
+    if (p.wf === 'dc') return clamp(p.o,0,3.3);
+    return clamp(
+      p.o + p.a * waveformUnit(tSec*p.f,p.wf),
+      0,
+      3.3
+    );
+  }
+
+  function previewNoiseUnit(tSec) {
+    // Display-only deterministic noise keyed to the 10 kHz DAC tick. The MCU
+    // uses its own xorshift stream; this simply makes the CH1 preview show the
+    // same configured noise magnitude without claiming sample-for-sample identity.
+    let x = (Math.floor(Math.max(0,tSec)*10000) + 1) >>> 0;
+    x ^= x << 13; x >>>= 0;
+    x ^= x >>> 17; x >>>= 0;
+    x ^= x << 5; x >>>= 0;
+    return ((x & 0xffff) / 32767.5) - 1;
+  }
+
+  function idealPreviewDisplayValue(tSec,p,windowSec) {
+    const alignedTime = tSec - state.triggerPosition * windowSec;
+    let v = p.wf === 'dc'
+      ? p.o
+      : p.o + p.a * waveformUnit(alignedTime*p.f,p.wf);
+
+    if (state.noiseEnabled && state.noiseLevel > 0) {
+      const noisePeakV = p.a * 0.5 * state.noiseLevel / 100;
+      v += noisePeakV * previewNoiseUnit(Math.max(0,tSec));
+    }
+
+    return clamp(v,0,3.3);
+  }
+
+  function drawIdealDAC(ctx,lo,hi) {
+    // Function Generator display = static ideal preview.
+    // It never follows ADC trigger/counters and is visible even while DAC STOPPED.
+    const p = params();
+    const w = ctx.canvas.width;
+    const h = ctx.canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    const points = Math.min(900,Math.max(360,Math.floor(w/(1.6*dpr))));
+    const windowSec = state.dacWindowMs/1000;
+
+    ctx.strokeStyle = '#DDBB32';
+    ctx.lineWidth = 1.8*dpr;
+    ctx.beginPath();
+
+    for (let i=0;i<points;i++) {
+      const t = i/(points-1);
+      const v = idealPreviewDisplayValue(t*windowSec,p,windowSec);
+      const x = t*w;
+      const y = h-(v-lo)/(hi-lo)*h;
+      if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  function drawTimeTrace(ctx,lo,hi,color,width=1.7,reference=false,showTrigger=false) {
+    refreshTriggerSnapshot();
+
+    const w = ctx.canvas.width;
+    const h = ctx.canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    const maxPoints = Math.max(
+      320,
+      Math.min(
+        MAX_TIME_TRACE_POINTS,
+        Math.floor(w/Math.max(1,dpr))
+      )
+    );
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width*dpr;
+    ctx.beginPath();
+
+    let started = false;
+
+    // Triggered display: a cached snapshot is built only when the MPU
+    // trigger counter changes, not every render frame.
+    if (state.triggerSnapshot && state.triggerSnapshot.n) {
+      const wv = state.triggerSnapshot;
+      const bounds = timeAxisBounds(wv);
+      const span = bounds.endCounter-bounds.startCounter;
+
+      if (!(span > 0)) return;
+
+      const drawStep = Math.max(
+        1,
+        Math.ceil(wv.n/maxPoints)
+      );
+
+      for (let i=0;i<wv.n;i+=drawStep) {
+        const counter = Number(wv.counter[i]);
+        const x = (counter-bounds.startCounter)/span*w;
+
+        if (x < 0 || x > w) continue;
+
+        const v = reference
+          ? refAtCounter(counter)
+          : wv.adc[i];
+        const y = h-(v-lo)/(hi-lo)*h;
+
+        if (!started) {
+          ctx.moveTo(x,y);
+          started = true;
+        } else {
+          ctx.lineTo(x,y);
+        }
+      }
+
+      if (started) ctx.stroke();
+      if (showTrigger) drawTriggerMarker(ctx,bounds);
+      return;
+    }
+
+    // Free-run display: read the bounded ring directly. This avoids
+    // allocating adc/counter/origin typed arrays at 25 FPS for long
+    // low-frequency windows, which previously caused periodic GC stalls.
+    const n = Math.min(ring.size,visibleCount());
+    if (n <= 0) return;
+
+    const spanSamples = state.adcWindowMs/1000*state.fs;
+    if (!(spanSamples > 0)) return;
+
+    const lastOffset = ring.size-1;
+    const lastIdx = ring.indexFromOldest(lastOffset);
+    const endCounter = Number(ring.counter[lastIdx]);
+    const startCounter = endCounter-spanSamples;
+    const startOffset = ring.size-n;
+    const drawStep = Math.max(
+      1,
+      Math.ceil(n/maxPoints)
+    );
+
+    for (
+      let offset=startOffset;
+      offset<ring.size;
+      offset+=drawStep
+    ) {
+      const idx = ring.indexFromOldest(offset);
+      const counter = Number(ring.counter[idx]);
+      const x = (counter-startCounter)/spanSamples*w;
+
+      if (x < 0 || x > w) continue;
+
+      const v = reference
+        ? refAtCounter(counter)
+        : ring.adc[idx];
+      const y = h-(v-lo)/(hi-lo)*h;
+
+      if (!started) {
+        ctx.moveTo(x,y);
+        started = true;
+      } else {
+        ctx.lineTo(x,y);
+      }
+    }
+
+    if (started) ctx.stroke();
+  }
+
+  function fmtV(v){ return v.toFixed(3)+' <span class="u">V</span>'; }
+  function fmtmV(v){ return (v*1000).toFixed(1)+' <span class="u">mV</span>'; }
+  function fmtMs(v){
+    const a = Math.abs(v);
+    if (a < 1) return (v*1000).toFixed(0)+' <span class="u">µs</span>';
+    return v.toFixed(2)+' <span class="u">ms</span>';
+  }
+
+  function spectrumFromMpu() {
+    const a = state.mpuAnalysis;
+    if (!a) return null;
+
+    const p = params();
+    const req = a.requested || {};
+    const fft = a.fft || {};
+    const transfer = a.transfer || {};
+    const measurement = a.measurement || {};
+
+    const hasDAC = !!(req.available ?? req.running);
+    const hasADC = !!fft.ready;
+    const dacHeld = !!req.hold;
+    const sourceParams = {
+      wf: String(req.waveform || 'dc'),
+      f: Number(req.frequency_hz) || 0,
+      a: Number(req.amplitude_v) || 0,
+      o: Number(req.offset_v) || 0,
+    };
+
+    // CH1 is a static theoretical reference owned by the browser.  The MPU
+    // supplies only source/reference state needed for acquisition/comparison;
+    // no CH1 harmonic list is rebuilt on the 2 Hz MPU analysis cadence.
+
+    const dbvA = Array.isArray(fft.magnitude_dbv)
+      ? fft.magnitude_dbv
+      : [];
+
+    return {
+      source: 'mpu',
+      backend: fft.backend || 'mpu',
+      analysisValid: fft.analysis_valid !== false,
+      hasDAC,
+      hasADC,
+      dacHeld,
+      sourceParams,
+      n: Number(fft.n) || 0,
+      df: Number(fft.df_hz) || null,
+      adcMaxHz: Number(a?.acquisition?.nyquist_hz) || state.fs/2,
+      plotMinHz: SPECTRUM_MIN_HZ,
+      plotMaxHz: SPECTRUM_MAX_HZ,
+      dbvA,
+      gainDb: transfer.valid && Number.isFinite(Number(transfer.gain_db))
+        ? Number(transfer.gain_db)
+        : null,
+      phaseDeg: transfer.valid && Number.isFinite(Number(transfer.phase_deg))
+        ? Number(transfer.phase_deg)
+        : null,
+      thd: transfer.valid && Number.isFinite(Number(transfer.thd_percent))
+        ? Number(transfer.thd_percent)
+        : null,
+      transferValid: !!transfer.valid,
+      transferReason: transfer.reason || '',
+      relationLocked: !!a?.time_comparison?.relation_valid,
+      signalPeriodic: !!measurement.periodic,
+      measuredFrequencyHz:
+        measurement.frequency_hz !== null &&
+        measurement.frequency_hz !== undefined &&
+        Number.isFinite(Number(measurement.frequency_hz))
+          ? Number(measurement.frequency_hz)
+          : null,
+      fundamental: hasDAC
+        ? Number(req.frequency_hz ?? p.f)
+        : null,
+      measuredPeakHz: measurement.periodic &&
+        Number.isFinite(Number(fft.measured_peak_hz))
+          ? Number(fft.measured_peak_hz)
+          : null,
+      yDbMin: SPECTRUM_DB_MIN,
+      yDbMax: SPECTRUM_DB_MAX,
+    };
+  }
+
+  function spectrumFadeStrokeStyle(
+    ctx,color,plotMinHz,plotMaxHz,w
+  ) {
+    const fadeZeroHz = Math.min(
+      plotMaxHz,Math.max(plotMinHz,SPECTRUM_FADE_ZERO_HZ)
+    );
+    const fadeFullHz = Math.min(
+      plotMaxHz,Math.max(fadeZeroHz,SPECTRUM_FADE_FULL_HZ)
+    );
+    const x0 = spectrumX(
+      fadeZeroHz,plotMaxHz,plotMinHz,state.freqAxis,w
+    );
+    const x1 = spectrumX(
+      fadeFullHz,plotMaxHz,plotMinHz,state.freqAxis,w
+    );
+
+    if (x0 === null || x1 === null || !(x1 > x0)) return color;
+
+    const gradient = ctx.createLinearGradient(x0,0,x1,0);
+    gradient.addColorStop(0,'rgba(0,214,230,0)');
+    gradient.addColorStop(0.45,'rgba(0,214,230,0.22)');
+    gradient.addColorStop(0.75,'rgba(0,214,230,0.62)');
+    gradient.addColorStop(1,color);
+    return gradient;
+  }
+
+  function drawAdcSpectrumDbvTrace(
+    ctx,dbv,df,plotMinHz,plotMaxHz,color,width=1.6
+  ) {
+    if (!dbv || !dbv.length || !(df > 0)) return;
+
+    const w = ctx.canvas.width;
+    const h = ctx.canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    const plotH = spectrumPlotHeight(h,dpr);
+
+    // v19.45: the axis still starts at 0.2 Hz, but data is already fully
+    // gone by 0.3 Hz and fades smoothly to full visibility at 0.5 Hz.
+    // MPU FFT values themselves are unchanged.
+    ctx.strokeStyle = spectrumFadeStrokeStyle(
+      ctx,color,plotMinHz,plotMaxHz,w
+    );
+    ctx.lineWidth = width*dpr;
+    ctx.beginPath();
+
+    let started = false;
+
+    for (let i=0;i<dbv.length;i++) {
+      const freq = i*df;
+      const x = spectrumX(
+        freq,
+        plotMaxHz,
+        plotMinHz,
+        state.freqAxis,
+        w
+      );
+
+      if (x === null) continue;
+
+      const y = dbvToY(Number(dbv[i]),plotH);
+
+      if (!started) {
+        ctx.moveTo(x,y);
+        started = true;
+      } else {
+        ctx.lineTo(x,y);
+      }
+    }
+
+    if (started) ctx.stroke();
+  }
+
+  // v19.44 CH1 static theoretical-reference layer.
+  // CH1 is not a measured channel.  Its frequency-domain view is a textbook
+  // drawing derived from already-known source settings, not an FFT/analysis
+  // workload.  A transparent offscreen Canvas is rebuilt only when CH1 source
+  // settings, noise settings, axis, or canvas geometry changes.  Normal 2 Hz
+  // CH2 FFT redraws only composite that cached image with drawImage().
+  let sourceNoiseTexture = null;
+  let sourceReferenceLayerCache = {key:'', canvas:null};
+
+  function ensureSourceNoiseTexture() {
+    if (sourceNoiseTexture) return sourceNoiseTexture;
+
+    const values = new Float32Array(SOURCE_NOISE_TEXTURE_SAMPLES);
+    let rng = 0x6d2b79f5 >>> 0;
+
+    function next01() {
+      rng ^= (rng << 13) >>> 0;
+      rng ^= rng >>> 17;
+      rng ^= (rng << 5) >>> 0;
+      rng >>>= 0;
+      return (rng + 1) / 4294967297;
+    }
+
+    // Fixed display texture.  Values are positive-only dB excursions so the
+    // broadband reference always grows upward from the -60 dBV plot floor.
+    // The same texture is reused for the entire page lifetime.
+    let smooth = 0.35;
+    for (let i=0;i<values.length;i++) {
+      const r = next01();
+      smooth = 0.58*smooth + 0.42*r;
+      const fine = next01();
+      const rare = next01() < 0.055 ? 3.0*next01() : 0;
+      values[i] = 0.7 + 5.0*smooth + 2.0*fine + rare;
+    }
+
+    sourceNoiseTexture = values;
+    return sourceNoiseTexture;
+  }
+
+  function theoreticalSourceNoiseFloorDbv(sourceParams) {
+    if (!state.noiseEnabled || !(state.noiseLevel > 0)) return null;
+
+    const sourceVpk = Math.max(0,Number(sourceParams?.a) || 0);
+    const noisePeakV = sourceVpk * 0.5 * state.noiseLevel / 100;
+    if (!(noisePeakV > 0)) return null;
+
+    // Display reference only: use the configured additive-noise magnitude to
+    // place the top of the static broadband carpet.  CH1 is intentionally not
+    // restricted by CH2 Nyquist because this is an ideal source reference.
+    const dacFsHz = 10000;
+    const oneSidedNoiseBwHz = dacFsHz / 2;
+    const noiseRmsV = noisePeakV / Math.sqrt(3);
+    const equivalentVpkPer1Hz =
+      Math.SQRT2 * noiseRmsV / Math.sqrt(oneSidedNoiseBwHz);
+
+    return 20*Math.log10(Math.max(equivalentVpkPer1Hz,1e-12));
+  }
+
+  function idealSourceHarmonicCount(sourceParams,plotMaxHz) {
+    const wf = String(sourceParams?.wf || 'dc');
+    const f0 = Math.max(0,Number(sourceParams?.f) || 0);
+    const a = Math.max(0,Number(sourceParams?.a) || 0);
+    if (wf === 'dc' || !(f0 > 0) || !(a > 0) || f0 > plotMaxHz) return 0;
+    if (wf === 'sine') return 1;
+    if (wf !== 'square' && wf !== 'triangle') return 0;
+    const maxOrder = Math.floor(plotMaxHz/f0);
+    return Math.max(0,Math.floor((maxOrder+1)/2));
+  }
+
+  function drawStaticSourceNoiseLayer(
+    ctx,sourceParams,plotMinHz,plotMaxHz,w,plotH,dpr
+  ) {
+    const baseDbv = theoreticalSourceNoiseFloorDbv(sourceParams);
+    if (!Number.isFinite(baseDbv) || baseDbv <= SPECTRUM_DB_MIN) return;
+
+    const texture = ensureSourceNoiseTexture();
+    const floorY = dbvToY(SPECTRUM_DB_MIN,plotH);
+
+    // Static theoretical noise carpet.  Fill every CSS-pixel column with the
+    // original opaque CH1 yellow from the -60 dBV floor upward.  Only the top
+    // edge jitters, so there are no transparent-looking gaps between columns.
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#DDBB32';
+
+    const columns = Math.max(2,Math.ceil(w/dpr));
+    const columnW = Math.max(1,Math.ceil(dpr));
+    for (let i=0;i<columns;i++) {
+      const x = Math.floor(i*dpr);
+      const ti = Math.min(
+        texture.length-1,
+        Math.floor((i/(columns-1))*(texture.length-1))
+      );
+      const topDbv = clamp(
+        baseDbv + texture[ti],
+        SPECTRUM_DB_MIN + 0.5,
+        SPECTRUM_DB_MAX
+      );
+      const y = dbvToY(topDbv,plotH);
+      ctx.fillRect(x,y,columnW,Math.max(1,floorY-y));
+    }
+  }
+
+  function drawIdealSourceHarmonicsLayer(
+    ctx,sourceParams,plotMinHz,plotMaxHz,w,plotH,dpr
+  ) {
+    const wf = String(sourceParams?.wf || 'dc');
+    const f0 = Math.max(0,Number(sourceParams?.f) || 0);
+    const a = Math.max(0,Number(sourceParams?.a) || 0);
+    if (wf === 'dc' || !(f0 > 0) || !(a > 0)) return;
+
+    const floorY = dbvToY(SPECTRUM_DB_MIN,plotH);
+    ctx.strokeStyle = '#DDBB32';
+    ctx.lineWidth = 1.6*dpr;
+    ctx.lineCap = 'butt';
+    ctx.beginPath();
+
+    function stem(freq,amp) {
+      if (!(freq >= plotMinHz) || freq > plotMaxHz || !(amp > 0)) return;
+      const x = spectrumX(freq,plotMaxHz,plotMinHz,state.freqAxis,w);
+      if (x === null) return;
+      const y = dbvToY(ampToDbv(amp),plotH);
+      ctx.moveTo(x,floorY);
+      ctx.lineTo(x,y);
+    }
+
+    if (wf === 'sine') {
+      stem(f0,a);
+    } else if (wf === 'square' || wf === 'triangle') {
+      // Draw the textbook Fourier impulses directly.  No MAX/SUM reduction,
+      // no envelope, no power merge.  Even a 1 Hz square's 5000 odd harmonics
+      // are rendered only once into the cached offscreen layer.
+      for (let order=1;;order+=2) {
+        const freq = f0*order;
+        if (freq > plotMaxHz) break;
+        const amp = wf === 'square'
+          ? a*4/(Math.PI*order)
+          : a*8/(Math.PI*Math.PI*order*order);
+        stem(freq,amp);
+      }
+    }
+
+    ctx.stroke();
+  }
+
+  function applySpectrumLeftFadeMask(
+    ctx,plotMinHz,plotMaxHz,w,plotH
+  ) {
+    const fadeZeroHz = Math.min(
+      plotMaxHz,Math.max(plotMinHz,SPECTRUM_FADE_ZERO_HZ)
+    );
+    const fadeFullHz = Math.min(
+      plotMaxHz,Math.max(fadeZeroHz,SPECTRUM_FADE_FULL_HZ)
+    );
+    const x0 = spectrumX(
+      fadeZeroHz,plotMaxHz,plotMinHz,state.freqAxis,w
+    );
+    const x1 = spectrumX(
+      fadeFullHz,plotMaxHz,plotMinHz,state.freqAxis,w
+    );
+
+    if (x0 === null || x1 === null || !(x1 > x0)) return;
+
+    // Mask only the cached CH1 data layer.  Grid, labels and the -60 dBV
+    // background stay untouched.  The data is fully transparent through
+    // 0.3 Hz, fades from 0.3 -> 0.5 Hz, and is fully opaque at >=0.5 Hz.
+    const gradient = ctx.createLinearGradient(x0,0,x1,0);
+    gradient.addColorStop(0,'rgba(255,255,255,0)');
+    gradient.addColorStop(0.45,'rgba(255,255,255,0.22)');
+    gradient.addColorStop(0.75,'rgba(255,255,255,0.62)');
+    gradient.addColorStop(1,'rgba(255,255,255,1)');
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0,0,w,plotH);
+    ctx.restore();
+  }
+
+  function buildSourceReferenceLayer(
+    targetCtx,sourceParams,plotMinHz,plotMaxHz
+  ) {
+    const p = {
+      wf:String(sourceParams?.wf || 'dc'),
+      f:Number(sourceParams?.f) || 0,
+      a:Number(sourceParams?.a) || 0,
+      o:Number(sourceParams?.o) || 0,
+    };
+
+    const w = targetCtx.canvas.width;
+    const h = targetCtx.canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    const key = [
+      p.wf,p.f.toFixed(6),p.a.toFixed(6),p.o.toFixed(6),
+      state.noiseEnabled ? 1 : 0,
+      Math.round(state.noiseLevel),
+      state.freqAxis,
+      plotMinHz,plotMaxHz,w,h,dpr,
+    ].join('|');
+
+    if (
+      sourceReferenceLayerCache.key === key &&
+      sourceReferenceLayerCache.canvas
+    ) {
+      return sourceReferenceLayerCache.canvas;
+    }
+
+    const layer = document.createElement('canvas');
+    layer.width = w;
+    layer.height = h;
+    const lctx = layer.getContext('2d');
+    const plotH = spectrumPlotHeight(h,dpr);
+
+    lctx.clearRect(0,0,w,h);
+    lctx.globalAlpha = 1;
+    lctx.globalCompositeOperation = 'source-over';
+
+    // Draw broadband reference first, then textbook Fourier stems directly on
+    // top.  They are intentionally simple same-color overlays.
+    drawStaticSourceNoiseLayer(
+      lctx,p,plotMinHz,plotMaxHz,w,plotH,dpr
+    );
+    drawIdealSourceHarmonicsLayer(
+      lctx,p,plotMinHz,plotMaxHz,w,plotH,dpr
+    );
+    applySpectrumLeftFadeMask(
+      lctx,plotMinHz,plotMaxHz,w,plotH
+    );
+
+    sourceReferenceLayerCache = {key,canvas:layer};
+    return layer;
+  }
+
+  function drawRequestedSourceSpectrum(
+    ctx,sourceParams,_unusedPeaks,plotMinHz,plotMaxHz
+  ) {
+    const layer = buildSourceReferenceLayer(
+      ctx,sourceParams,plotMinHz,plotMaxHz
+    );
+    if (layer) ctx.drawImage(layer,0,0);
+  }
+
+  function drawSpectrumLegend(ctx,hasDAC,hasADC) {
+    if (!hasDAC && !hasADC) return;
+
+    const w = ctx.canvas.width;
+    const dpr = window.devicePixelRatio || 1;
+    const items = [];
+
+    if (hasDAC) items.push({label:'CH1 DAC',color:'#DDBB32'});
+    if (hasADC) items.push({label:'CH2 ADC',color:'#00d6e6'});
+
+    ctx.save();
+    ctx.font = `700 ${9.5*dpr}px Segoe UI, Arial`;
+
+    const itemWidths = items.map(item =>
+      21*dpr + ctx.measureText(item.label).width
+    );
+    const gap = 14*dpr;
+    const padX = 10*dpr;
+    const boxH = 27*dpr;
+    const boxW = padX*2 +
+      itemWidths.reduce((a,b)=>a+b,0) +
+      gap*Math.max(0,items.length-1);
+
+    const x0 = Math.max(8*dpr,w-boxW-8*dpr);
+    const y0 = 8*dpr;
+
+    ctx.fillStyle = 'rgba(9,16,23,0.82)';
+    ctx.strokeStyle = 'rgba(216,225,234,0.28)';
+    ctx.lineWidth = 1*dpr;
+    ctx.beginPath();
+    ctx.roundRect(x0,y0,boxW,boxH,5*dpr);
+    ctx.fill();
+    ctx.stroke();
+
+    let x = x0+padX;
+    const cy = y0+boxH/2;
+
+    for (let i=0;i<items.length;i++) {
+      const item = items[i];
+
+      ctx.strokeStyle = item.color;
+      ctx.lineWidth = 2.5*dpr;
+      ctx.beginPath();
+      ctx.moveTo(x,cy);
+      ctx.lineTo(x+14*dpr,cy);
+      ctx.stroke();
+
+      x += 19*dpr;
+      ctx.fillStyle = item.color;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(item.label,x,cy);
+
+      x += ctx.measureText(item.label).width;
+      if (i < items.length-1) x += gap;
+    }
+
+    ctx.restore();
+  }
+
+  function aliasFrequency(freq,fs) {
+    let r = ((freq%fs)+fs)%fs;
+    if (r > fs/2) r = fs-r;
+    return r;
+  }
+
+  function updateMainMetrics(now=performance.now()) {
+    const p = state.dacRunning
+      ? params()
+      : (state.dacHoldAvailable ? analysisDacParams() : params());
+    const currentCounter = state.latestCounter || 0;
+    const dacV = idealPreviewValue((state.dacWindowMs/1000)*0.5,p);
+
+    $('dacCode').innerHTML =
+      Math.round(clamp(dacV,0,3.3)/3.3*4095)+' <span class="u">/4095</span>';
+    $('dacV').innerHTML = fmtV(dacV);
+
+    const low = p.wf==='dc' ? p.o : clamp(p.o-p.a,0,3.3);
+    const high = p.wf==='dc' ? p.o : clamp(p.o+p.a,0,3.3);
+
+    $('dacVpp').innerHTML = fmtV(high-low);
+    $('dacMean').innerHTML = fmtV(p.o);
+
+    const autosetOwnsHealth = autosetHealthOverride();
+
+    if (!ring.size) {
+      ['adcCode','adcV','errV','adcFreq'].forEach(id => $(id).textContent='—');
+
+      if (!autosetOwnsHealth && state.adcRunning) {
+        setHealth('ADC ACTIVE','ok','Waiting for ADC samples.');
+      }
+
+      return;
+    }
+
+    const s = ring.getOldestOffset(ring.size-1);
+
+    // v19.31: acquisition and waveform rendering remain fully live, while the
+    // human-readable MEASURE · LIVE numeric cards are synchronized to the
+    // 2 Hz MPU analysis cadence. ADC acquisition and 25 fps TIME rendering
+    // remain independent and unchanged.
+    if (now-state.lastMeasureDisplayAt >= MEASURE_DISPLAY_INTERVAL_MS) {
+      const ref = refAtCounter(s.counter);
+
+      $('adcCode').innerHTML =
+        Math.round(s.adc/3.3*16383)+' <span class="u">/16383</span>';
+      $('adcV').innerHTML = fmtV(s.adc);
+
+      const relationLocked =
+        !!state.mpuAnalysis?.time_comparison?.relation_valid;
+
+      $('errV').innerHTML =
+        state.dacRunning && relationLocked
+          ? fmtmV(s.adc-ref)
+          : '—';
+
+      const mpuFreq = Number(state.mpuAnalysis?.measurement?.frequency_hz);
+      const f = Number.isFinite(mpuFreq) && mpuFreq > 0
+        ? mpuFreq
+        : null;
+
+      $('adcFreq').innerHTML = f
+        ? f.toFixed(f<10?2:1)+' <span class="u">Hz</span>'
+        : '—';
+
+      state.lastMeasureDisplayAt = now;
+    }
+
+    if (autosetOwnsHealth) {
+      return;
+    }
+
+    if (state.adcRunning) {
+      const m = state.mpuAnalysis?.measurement || {};
+      const mf = Number(m.frequency_hz);
+      const periodic = !!m.periodic && Number.isFinite(mf) && mf > 0;
+
+      if (state.clientMissed) {
+        setHealth(
+          'BUFFER RESYNC',
+          'warn',
+          'Browser resumed within the bounded ring.'
+        );
+      } else if (periodic) {
+        const spc = state.fs/mf;
+        const nyquist = state.fs/2;
+
+        if (mf > nyquist) {
+          setHealth('ALIAS · > NYQUIST','warn',`${mf.toFixed(1)} Hz`);
+        } else if (spc <= 2.5 || mf >= nyquist*0.80) {
+          setHealth('NEAR NYQUIST','warn',`${spc.toFixed(1)} samples/cycle`);
+        } else if (spc < 8) {
+          setHealth('SAMPLING LOW','warn',`${spc.toFixed(1)} samples/cycle`);
+        } else {
+          setHealth(
+            'ADC ACTIVE',
+            'ok',
+            `${mf.toFixed(mf<10?2:1)} Hz · ${spc.toFixed(1)} samples/cycle`
+          );
+        }
+      } else {
+        setHealth(
+          'ADC ACTIVE',
+          'ok',
+          'No periodic lock · free-run acquisition'
+        );
+      }
+    } else {
+      setHealth('ADC STOPPED','warn','Waveform is frozen at the last acquisition.');
+    }
+  }
+
+  function timeAnalysisFromMpu() {
+    const t = state.mpuAnalysis?.time_comparison;
+    if (!t?.relation_valid) return null;
+
+    const finite = v => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    return {
+      source:'mpu',
+      n:finite(t.n),
+      meanErr:finite(t.mean_error_v),
+      rmse:finite(t.rmse_v),
+      peak:finite(t.peak_error_v),
+      delayMs:finite(t.delay_ms),
+      phaseDeg:finite(t.phase_deg),
+      corr:finite(t.correlation),
+      lagSamples:finite(t.lag_samples),
+    };
+  }
+
+  function adcTimeStats() {
+    const m = state.mpuAnalysis?.measurement;
+    if (!m?.ready) return null;
+
+    const mean = Number(m.mean_v);
+    const vpp = Number(m.vpp_v);
+    const rms = Number(m.rms_v);
+    const freq = Number(m.frequency_hz);
+    const n = Number(m.n);
+
+    if (
+      !Number.isFinite(mean) ||
+      !Number.isFinite(vpp) ||
+      !Number.isFinite(rms)
+    ) return null;
+
+    return {
+      mean,
+      vpp,
+      rms,
+      freq: Number.isFinite(freq) ? freq : null,
+      periodic: !!m.periodic,
+      signalClass: String(m.signal_class || ''),
+      n: Number.isFinite(n) ? n : 0,
+      source:'mpu',
+    };
+  }
+
+  function setComparisonMetric(i,key,value) {
+    $('cmpK'+i).textContent = key;
+    $('cmpV'+i).innerHTML = value;
+  }
+
+  function updateTimeMetrics() {
+    const hasDAC = analysisDacAvailable();
+    const hasADC = ring.size > 0;
+    const p = analysisDacParams();
+    const relationLocked =
+      !!state.mpuAnalysis?.time_comparison?.relation_valid;
+
+    if (hasDAC && hasADC && relationLocked) {
+      const a = state.timeAnalysis;
+      setComparisonMetric(1,'MEAN ΔV',a ? fmtmV(a.meanErr) : '—');
+      setComparisonMetric(2,'RMSE ΔV',a ? fmtmV(a.rmse) : '—');
+      setComparisonMetric(3,'PEAK ΔV',a ? fmtmV(a.peak) : '—');
+      setComparisonMetric(4,'EST. DELAY',a && a.delayMs !== null ? fmtMs(a.delayMs) : '—');
+      setComparisonMetric(5,'PHASE',a && a.phaseDeg !== null ? a.phaseDeg.toFixed(1)+' <span class="u">°</span>' : '—');
+      setComparisonMetric(6,'CORRELATION',a && a.corr !== null ? a.corr.toFixed(3) : '—');
+      return;
+    }
+
+    if (hasDAC && hasADC) {
+      const a = adcTimeStats();
+      const lo = p.wf==='dc' ? p.o : clamp(p.o-p.a,0,3.3);
+      const hi = p.wf==='dc' ? p.o : clamp(p.o+p.a,0,3.3);
+
+      setComparisonMetric(1,'CH1 FREQ',p.wf==='dc' ? 'DC' : p.f.toFixed(p.f<10?2:1)+' <span class="u">Hz</span>');
+      setComparisonMetric(2,'CH2 FREQ',a && a.freq ? a.freq.toFixed(a.freq<10?2:1)+' <span class="u">Hz</span>' : '—');
+      setComparisonMetric(3,'CH1 VPP',(hi-lo).toFixed(3)+' <span class="u">V</span>');
+      setComparisonMetric(4,'CH2 VPP',a ? a.vpp.toFixed(3)+' <span class="u">V</span>' : '—');
+      setComparisonMetric(5,'RELATION','INDEPENDENT');
+      setComparisonMetric(6,'CHANNEL','CH1 + CH2');
+      return;
+    }
+
+    if (hasDAC) {
+      const lo = p.wf==='dc' ? p.o : clamp(p.o-p.a,0,3.3);
+      const hi = p.wf==='dc' ? p.o : clamp(p.o+p.a,0,3.3);
+      setComparisonMetric(1,'REQUEST FREQ',p.wf==='dc' ? 'DC' : p.f.toFixed(p.f<10?2:1)+' <span class="u">Hz</span>');
+      setComparisonMetric(2,'WAVEFORM',p.wf.toUpperCase());
+      setComparisonMetric(3,'VPP',(hi-lo).toFixed(3)+' <span class="u">V</span>');
+      setComparisonMetric(4,'OFFSET',p.o.toFixed(3)+' <span class="u">V</span>');
+      setComparisonMetric(5,'TIME/DIV',formatTimeMs(state.dacTimeDivMs,true));
+      setComparisonMetric(6,'CHANNEL','CH1 ONLY');
+      return;
+    }
+
+    if (hasADC) {
+      const a=adcTimeStats();
+      setComparisonMetric(1,'MEASURED FREQ',a && a.freq ? a.freq.toFixed(a.freq<10?2:1)+' <span class="u">Hz</span>' : '—');
+      setComparisonMetric(2,'VPP',a ? a.vpp.toFixed(3)+' <span class="u">V</span>' : '—');
+      setComparisonMetric(3,'MEAN',a ? a.mean.toFixed(3)+' <span class="u">V</span>' : '—');
+      setComparisonMetric(4,'RMS',a ? a.rms.toFixed(3)+' <span class="u">V</span>' : '—');
+      setComparisonMetric(5,'SIGNAL',a?.periodic ? 'PERIODIC' : 'FREE RUN');
+      setComparisonMetric(6,'CHANNEL','CH2 ONLY');
+      return;
+    }
+
+    for (let i=1;i<=6;i++) {
+      setComparisonMetric(
+        i,
+        ['SIGNAL','FREQUENCY','VPP','MEAN','SAMPLES','CHANNEL'][i-1],
+        '—'
+      );
+    }
+  }
+
+  function updateFrequencyMetrics() {
+    const s = state.spectrum;
+    const p = s?.sourceParams || analysisDacParams();
+    const nyquist = state.fs/2;
+    if (!s) return;
+
+    if (s.hasDAC && s.hasADC && s.transferValid) {
+      setComparisonMetric(1,'FUNDAMENTAL',p.f.toFixed(p.f<10?2:1)+' <span class="u">Hz</span>');
+      setComparisonMetric(2,'GAIN',s.gainDb !== null ? s.gainDb.toFixed(2)+' <span class="u">dB</span>' : '—');
+      setComparisonMetric(3,'PHASE',s.phaseDeg !== null ? s.phaseDeg.toFixed(1)+' <span class="u">°</span>' : '—');
+      setComparisonMetric(4,'THD · SINE',s.thd !== null ? s.thd.toFixed(2)+' <span class="u">%</span>' : '—');
+      setComparisonMetric(5,'FFT N',String(s.n));
+      setComparisonMetric(6,'ΔF',s.df ? s.df.toFixed(2)+' <span class="u">Hz</span>' : '—');
+      return;
+    }
+
+    if (s.hasDAC && s.hasADC) {
+      setComparisonMetric(1,'CH1 FREQ',p.wf==='dc' ? 'DC' : p.f.toFixed(p.f<10?2:1)+' <span class="u">Hz</span>');
+      setComparisonMetric(2,'CH2 FREQ',s.measuredFrequencyHz !== null ? s.measuredFrequencyHz.toFixed(s.measuredFrequencyHz<10?2:1)+' <span class="u">Hz</span>' : '—');
+      setComparisonMetric(3,'RELATION','INDEPENDENT');
+      setComparisonMetric(4,'NYQUIST',nyquist.toFixed(0)+' <span class="u">Hz</span>');
+      setComparisonMetric(5,'FFT N',String(s.n));
+      setComparisonMetric(6,'ΔF',s.df ? s.df.toFixed(2)+' <span class="u">Hz</span>' : '—');
+      return;
+    }
+
+    if (s.hasDAC) {
+      setComparisonMetric(1,'REQUEST',p.wf==='dc' ? 'DC' : p.f.toFixed(p.f<10?2:1)+' <span class="u">Hz</span>');
+      setComparisonMetric(2,'WAVEFORM',p.wf.toUpperCase());
+      setComparisonMetric(3,'HARMONICS',String(idealSourceHarmonicCount(p,s.plotMaxHz)));
+      setComparisonMetric(4,'VPK',p.a.toFixed(2)+' <span class="u">V</span>');
+      setComparisonMetric(5,'F MAX',formatHz(s.plotMaxHz));
+      setComparisonMetric(6,'CHANNEL','CH1 ONLY');
+      return;
+    }
+
+    if (s.hasADC) {
+      setComparisonMetric(1,'MEASURED FREQ',s.measuredFrequencyHz !== null ? s.measuredFrequencyHz.toFixed(s.measuredFrequencyHz<10?2:1)+' <span class="u">Hz</span>' : '—');
+      setComparisonMetric(2,'FFT N',String(s.n));
+      setComparisonMetric(3,'ΔF',s.df ? s.df.toFixed(2)+' <span class="u">Hz</span>' : '—');
+      setComparisonMetric(4,'NYQUIST',nyquist.toFixed(0)+' <span class="u">Hz</span>');
+      setComparisonMetric(5,'SIGNAL',s.signalPeriodic ? 'PERIODIC' : 'FREE RUN');
+      setComparisonMetric(6,'CHANNEL','CH2 ONLY');
+      return;
+    }
+
+    for (let i=1;i<=6;i++) {
+      setComparisonMetric(
+        i,
+        ['SIGNAL','FREQUENCY','FFT N','NYQUIST','SAMPLE RATE','CHANNEL'][i-1],
+        '—'
+      );
+    }
+  }
+
+  function drawIdealAnalysisTrace(ctx,lo,hi) {
+    const p=analysisDacParams();
+    const w=ctx.canvas.width,h=ctx.canvas.height,dpr=window.devicePixelRatio||1;
+    const points=Math.min(900,Math.max(360,Math.floor(w/(1.6*dpr))));
+    const windowSec=state.dacWindowMs/1000;
+    ctx.strokeStyle='#DDBB32'; ctx.lineWidth=1.8*dpr; ctx.beginPath();
+    for(let i=0;i<points;i++) {
+      const t=i/(points-1);
+      const v=idealPreviewDisplayValue(t*windowSec,p,windowSec);
+      const x=t*w, y=h-(v-lo)/(hi-lo)*h;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  function drawTimeComparison(scale) {
+    const hasDAC=analysisDacAvailable();
+    const hasADC=ring.size>0;
+    const dacHeld=hasDAC && analysisDacHeld();
+    const adcHeld=hasADC && !state.adcRunning;
+    $('cmpLegendFoot').style.visibility='visible';
+    voltageGrid(X.cmpCanvas,scale.lo,scale.hi);
+
+    if (hasADC) {
+      if (hasDAC && state.showCh1Analysis) {
+        drawTimeTrace(X.cmpCanvas,scale.lo,scale.hi,'#DDBB32',1.8,true,true);
+      }
+      if (state.showCh2Analysis) {
+        drawTimeTrace(X.cmpCanvas,scale.lo,scale.hi,'#00d6e6',1.7,false,true);
+      }
+    } else if (hasDAC && state.showCh1Analysis) {
+      drawIdealAnalysisTrace(X.cmpCanvas,scale.lo,scale.hi);
+    }
+
+    $('cmpCh1Label').textContent = hasDAC ? (dacHeld ? 'CH1 DAC · HOLD' : 'CH1 DAC') : 'CH1 —';
+    $('cmpCh2Label').textContent = hasADC ? (adcHeld ? 'CH2 ADC · HOLD' : 'CH2 ADC') : 'CH2 —';
+    updateAnalysisTraceButtons();
+
+    if (hasDAC && hasADC) {
+      const relationLocked =
+        !!state.mpuAnalysis?.time_comparison?.relation_valid;
+
+      $('compareSubtitle').textContent = relationLocked
+        ? 'CH1 DAC ↔ CH2 ADC · comparison lock'
+        : 'CH1 DAC + CH2 ADC · independent signals';
+
+      $('modeText').textContent = relationLocked
+        ? `TIME · MPU · COMPARE${(dacHeld||adcHeld)?' · HOLD':''}`
+        : `TIME · MPU · INDEPENDENT${(dacHeld||adcHeld)?' · HOLD':''}`;
+
+      $('xSpanText').textContent=formatTimeMs(state.adcWindowMs,false);
+    } else if (hasDAC) {
+      $('compareSubtitle').textContent='CH1 DAC waveform analysis · ADC not required';
+      $('modeText').textContent=dacHeld?'TIME · CH1 ONLY · HOLD':'TIME · CH1 ONLY';
+      $('xSpanText').textContent=formatTimeMs(state.dacWindowMs,false);
+    } else if (hasADC) {
+      $('compareSubtitle').textContent='CH2 measured waveform analysis · Function Generator not required';
+      $('modeText').textContent=adcHeld?'TIME · MPU · CH2 ONLY · HOLD':'TIME · MPU · CH2 ONLY';
+      $('xSpanText').textContent=formatTimeMs(state.adcWindowMs,false);
+    } else {
+      $('compareSubtitle').textContent='Run CH1 or acquire CH2 to analyze a signal';
+      $('modeText').textContent='TIME · IDLE';
+      $('xSpanText').textContent='—';
+    }
+
+    $('rangeText').textContent='Y: '+scale.lo.toFixed(2)+'–'+scale.hi.toFixed(2)+' V';
+    updateTriggerUi();
+    updateTimeMetrics();
+  }
+
+  function drawFrequencyComparison(now) {
+    let s = spectrumFromMpu();
+
+    if (!s) {
+      s = {
+        source:'mpu',
+        hasDAC:analysisDacAvailable(),
+        hasADC:false,
+        dacHeld:analysisDacHeld(),
+        sourceParams:analysisDacParams(),
+        n:0,
+        df:null,
+        plotMinHz:SPECTRUM_MIN_HZ,
+        plotMaxHz:SPECTRUM_MAX_HZ,
+        dbvA:[],
+        gainDb:null,
+        phaseDeg:null,
+        thd:null,
+        transferValid:false,
+        measuredPeakHz:null,
+        measuredFrequencyHz:null,
+        signalPeriodic:false,
+      };
+    }
+
+    if (
+      s.hasADC &&
+      (!s.dbvA || !s.dbvA.length) &&
+      !state.mpuAnalysisBusy
+    ) {
+      fetchMpuAnalysis(true);
+    }
+
+    state.spectrum=s;
+    state.spectrumDirty=false;
+    state.lastSpectrumAt=now;
+
+    spectrumGrid(
+      X.cmpCanvas,
+      s.plotMaxHz,
+      s.plotMinHz,
+      state.freqAxis,
+      s.hasADC
+    );
+
+    const drawCh1 = s.hasDAC && state.showCh1Analysis;
+    const drawCh2 = s.hasADC && state.showCh2Analysis;
+
+    if (drawCh1) {
+      // CH1 is a source-defined ideal spectrum. While DAC is running, use the
+      // live Function Generator controls directly so spectrum regeneration is
+      // event-driven by source edits rather than by the 2 Hz MPU analysis.
+      // When DAC is stopped, preserve the held source that was actually active.
+      const idealSourceParams = state.dacRunning
+        ? params()
+        : (state.dacHoldParams || s.sourceParams);
+
+      drawRequestedSourceSpectrum(
+        X.cmpCanvas,
+        idealSourceParams,
+        null,
+        s.plotMinHz,
+        s.plotMaxHz
+      );
+    }
+
+    if (drawCh2 && s.dbvA && s.dbvA.length) {
+      drawAdcSpectrumDbvTrace(
+        X.cmpCanvas,
+        s.dbvA,
+        s.df,
+        s.plotMinHz,
+        s.plotMaxHz,
+        '#00d6e6',
+        1.7
+      );
+    }
+
+    drawSpectrumLegend(X.cmpCanvas,drawCh1,drawCh2);
+    $('cmpLegendFoot').style.visibility='hidden';
+
+    const freqDacHeld = s.hasDAC && !!s.dacHeld;
+    const freqAdcHeld = s.hasADC && !state.adcRunning;
+    $('cmpCh1Label').textContent=s.hasDAC?(freqDacHeld?'CH1 DAC · HOLD':'CH1 DAC'):'CH1 —';
+    $('cmpCh2Label').textContent=s.hasADC?(freqAdcHeld?'CH2 ADC · HOLD':'CH2 ADC'):'CH2 —';
+    updateAnalysisTraceButtons();
+
+    if (s.hasDAC && s.hasADC) {
+      $('compareSubtitle').textContent = s.transferValid
+        ? 'CH1 DAC ↔ CH2 ADC · comparison lock'
+        : 'CH1 DAC + CH2 ADC · independent spectra';
+
+      const holdSuffix=(freqDacHeld||freqAdcHeld)?' · HOLD':'';
+      $('modeText').textContent = s.transferValid
+        ? `FFT · MPU · COMPARE${holdSuffix} · X ${state.freqAxis.toUpperCase()} · Y dBV · N=${s.n}`
+        : `FFT · MPU · INDEPENDENT${holdSuffix} · X ${state.freqAxis.toUpperCase()} · Y dBV · N=${s.n}`;
+
+    } else if (s.hasDAC) {
+      $('compareSubtitle').textContent=
+        'CH1 ideal source Fourier spectrum';
+
+      $('modeText').textContent =
+        `SPECTRUM · MPU · CH1 ONLY${freqDacHeld?' · HOLD':''} · X ${state.freqAxis.toUpperCase()} · Y dBV`;
+
+    } else if (s.hasADC) {
+      $('compareSubtitle').textContent=
+        'CH2 measured ADC spectrum · external signals supported';
+
+      $('modeText').textContent =
+        `FFT · MPU · CH2 ONLY${freqAdcHeld?' · HOLD':''} · X ${state.freqAxis.toUpperCase()} · Y dBV · N=${s.n}`;
+
+    } else {
+      $('compareSubtitle').textContent=
+        'Run CH1 or acquire CH2 to analyze a spectrum';
+
+      $('modeText').textContent =
+        `SPECTRUM · MPU · IDLE · X ${state.freqAxis.toUpperCase()}`;
+    }
+
+    $('rangeText').textContent='Y: -60 to +12 dBV';
+    $('xSpanText').textContent = state.freqAxis==='log'
+      ? '0.2 Hz–10 kHz · X LOG'
+      : '0.2 Hz–10 kHz · X LINEAR';
+
+    updateFrequencyMetrics();
+  }
+
+  function renderFrame(now) {
+    const needTime = state.timeDirty;
+    const needCompare = state.compareDirty;
+    const needVoltageScale = needTime ||
+      (needCompare && state.compareMode === 'time');
+
+    let dacScale = null;
+    let oscScale = null;
+    let compareScale = null;
+
+    if (needVoltageScale) {
+      dacScale = getDacVoltageScale();
+      oscScale = getOscVoltageScale();
+      compareScale = getComparisonVoltageScale(dacScale,oscScale);
+    }
+
+    if (needTime) {
+      voltageGrid(X.dacCanvas,dacScale.lo,dacScale.hi);
+      voltageGrid(X.adcCanvas,oscScale.lo,oscScale.hi);
+
+      drawIdealDAC(X.dacCanvas,dacScale.lo,dacScale.hi);
+      drawTimeTrace(
+        X.adcCanvas,
+        oscScale.lo,
+        oscScale.hi,
+        '#00d6e6',
+        1.8,
+        false,
+        true
+      );
+
+      const dacDiv = (dacScale.hi-dacScale.lo)/8;
+      const adcDiv = (oscScale.hi-oscScale.lo)/8;
+
+      $('dacScale').textContent = dacDiv<0.1
+        ? (dacDiv*1000).toFixed(0)+' mV/div'
+        : dacDiv.toFixed(2)+' V/div';
+
+      $('adcScale').textContent = adcDiv<0.1
+        ? (adcDiv*1000).toFixed(0)+' mV/div'
+        : adcDiv.toFixed(2)+' V/div';
+
+      state.timeDirty = false;
+    }
+
+    if (
+      state.analysisDirty &&
+      now-state.lastAnalysisAt >= ANALYSIS_INTERVAL_MS
+    ) {
+      if (state.dacRunning && ring.size > 0) {
+        state.timeAnalysis = timeAnalysisFromMpu();
+      } else if (!analysisDacAvailable() || ring.size <= 0) {
+        state.timeAnalysis = null;
+      }
+      // Otherwise preserve the last comparison result as a HOLD snapshot.
+
+      state.analysisDirty = false;
+      state.lastAnalysisAt = now;
+      if (state.compareMode === 'time') {
+        state.compareDirty = true;
+      }
+    }
+
+    if (state.compareDirty) {
+      if (state.compareMode === 'time') {
+        if (!compareScale) {
+          dacScale = dacScale || getDacVoltageScale();
+          oscScale = oscScale || getOscVoltageScale();
+          compareScale = getComparisonVoltageScale(dacScale,oscScale);
+        }
+        drawTimeComparison(compareScale);
+      } else {
+        drawFrequencyComparison(now);
+      }
+      state.compareDirty = false;
+    }
+
+    // Numeric/status fields are cheap and may depend on the newest MPU
+    // snapshot even when neither canvas needs repainting.
+    updateMainMetrics(now);
+
+    state.renderDirty =
+      state.timeDirty || state.compareDirty || state.analysisDirty;
+  }
+
+  function renderLoop() {
+    const now = performance.now();
+    // DISPLAY HOLD freezes only browser rendering. ADC acquisition, Bridge,
+    // MPU analysis and polling continue normally in the background.
+    if (!state.displayHold && state.renderDirty) renderFrame(now);
+    setTimeout(renderLoop,1000/RENDER_FPS);
+  }
+
+  function formatTimeMs(ms,perDiv=false) {
+    const suffix = perDiv ? '/div' : '';
+
+    if (ms < 1) {
+      return `${Math.round(ms*1000)} µs${suffix}`;
+    }
+
+    const digits = ms < 10 && Math.abs(ms-Math.round(ms)) > 1e-9 ? 1 : 0;
+    return `${ms.toFixed(digits)} ms${suffix}`;
+  }
+
+  function updateDacTimebase(i,share=false) {
+    i=clamp(parseInt(i,10)||0,0,TIME_DIVS.length-1);
+    state.dacTimeDivMs=TIME_DIVS[i];
+    state.dacWindowMs=state.dacTimeDivMs*10;
+    $('dacTimeDiv').value=i;
+    $('dacTimeDivValue').textContent=formatTimeMs(state.dacTimeDivMs,true);
+    $('dacWindowValue').textContent=formatTimeMs(state.dacWindowMs,false);
+    $('dacTimeDivFooter').textContent=formatTimeMs(state.dacTimeDivMs,true);
+    markDirty(true);
+    if (share) postSharedUi({dac_time_div_ms:state.dacTimeDivMs});
+  }
+
+  function autoFitDacPreview() {
+    const p = params();
+
+    // Aim for about 2.5 cycles over the full 10-division preview.
+    // target per division = 0.25 / f seconds = 250/f ms.
+    // At the 100 Hz DAC ceiling, the preview comfortably shows multiple cycles.
+    const targetMsPerDiv = 250/Math.max(MIN_FREQ,p.f);
+    const index = nearestTimeDivIndex(targetMsPerDiv);
+    updateDacTimebase(index,true);
+  }
+
+  function updateAdcTimebase(i,syncTrigger=true,share=false) {
+    i=clamp(parseInt(i,10)||0,0,TIME_DIVS.length-1);
+    state.adcTimeDivMs=TIME_DIVS[i];
+    state.adcWindowMs=state.adcTimeDivMs*10;
+    $('adcTimeDiv').value=i;
+    $('adcTimeDivValue').textContent=formatTimeMs(state.adcTimeDivMs,true);
+    $('adcWindowValue').textContent=formatTimeMs(state.adcWindowMs,false);
+    $('adcTimeDivFooter').textContent=formatTimeMs(state.adcTimeDivMs,true);
+    state.triggerSnapshot=null;
+    state.triggerCounter=null;
+    clearAutosetLockedSnapshot();
+    if (syncTrigger) syncMpuTriggerConfig();
+    markDirty(true);
+    if (share) postSharedUi({adc_time_div_ms:state.adcTimeDivMs});
+  }
+
+  function setCompareMode(mode,share=false) {
+    state.compareMode = mode;
+
+    $('timeModeBtn').classList.toggle('active',mode==='time');
+    $('freqModeBtn').classList.toggle('active',mode==='frequency');
+
+    // Keep the control geometry fixed. TIME does not use frequency-axis
+    // scaling, so the buttons remain visible but become inactive.
+    const axisDisabled = mode !== 'frequency';
+    $('freqLogBtn').disabled = axisDisabled;
+    $('freqLinearBtn').disabled = axisDisabled;
+
+    if (mode === 'frequency') {
+      state.spectrumDirty = true;
+      fetchMpuAnalysis(true);
+    }
+
+    markDirty(true);
+    if (share) postSharedUi({compare_mode:mode});
+  }
+
+  $('dacRunBtn').onclick = async() => {
+    try {
+      const j = await post('/api/dac/run',{running:true});
+      state.dacRunning = true;
+      state.dacHoldAvailable = true;
+      state.dacHoldParams = cloneParams(params());
+      state.phaseOrigin = Number(j.phase_origin) || 0;
+      if (j.source) applyServerSource(j.source,true);
+
+      // set_dac_run() returns the current MCU sample counter.
+      // Use it immediately as the standalone CH1 display time origin.
+      state.latestCounter = Math.max(
+        state.latestCounter,
+        state.phaseOrigin
+      );
+
+      if (!j.source) {
+        addDacEvent(state.phaseOrigin,true,params());
+      }
+      updateRunButtons();
+      markDirty(true);
+    } catch(e) {
+      setStatus('DAC CONTROL ERROR',false,e.message);
+    }
+  };
+
+  $('dacStopBtn').onclick = async() => {
+    try {
+      const j = await post('/api/dac/run',{running:false});
+      // STOP means HOLD for the lower analysis. Keep the last source that
+      // was physically active even though A0 itself is driven to 0 V.
+      if (!state.dacHoldParams) state.dacHoldParams = cloneParams(params());
+      state.dacHoldAvailable = true;
+      state.dacRunning = false;
+      state.phaseOrigin = Number(j.phase_origin) || 0;
+
+      if (j.source) {
+        applyServerSource(j.source,true);
+      } else {
+        addDacEvent(state.phaseOrigin,false,params());
+      }
+
+      // ADC history and both lower-channel analysis snapshots are held.
+      updateRunButtons();
+      markDirty(false);
+      fetchMpuAnalysis(true);
+    } catch(e) {
+      setStatus('DAC CONTROL ERROR',false,e.message);
+    }
+  };
+
+  $('adcRunBtn').onclick = async() => {
+    try {
+      const j = await post('/api/adc/run',{running:true});
+      state.adcRunning = true;
+      clearAutosetLockedSnapshot();
+      clearAcquisition(j.sequence);
+      updateRunButtons();
+    } catch(e) {
+      setStatus('ADC CONTROL ERROR',false,e.message);
+    }
+  };
+
+  $('adcStopBtn').onclick = async() => {
+    try {
+      await post('/api/adc/run',{running:false});
+      state.adcRunning = false;
+      clearAutosetLockedSnapshot();
+
+      if (state.autoset.active) {
+        state.autoset.active = false;
+        state.autoset.phase = 'idle';
+        state.autoset.freezeSnapshot = null;
+        state.autoset.token++;
+        setAutosetMessage(
+          'AUTOSET · CANCELLED',
+          'warn',
+          'ADC acquisition was stopped.',
+          1600
+        );
+      }
+
+      // STOP means freeze: do not clear the browser ring or MPU snapshots.
+      // One final fetch captures the last completed analysis; after this,
+      // incoming ADC data no longer changes because acquisition is stopped.
+      await fetchMpuAnalysis(true);
+      updateRunButtons();
+      markDirty(false);
+    } catch(e) {
+      setStatus('ADC CONTROL ERROR',false,e.message);
+    }
+  };
+
+  $('displayHoldBtn').onclick = () => {
+    setDisplayHold(!state.displayHold,true);
+  };
+
+  $('autoBtn').onclick = () => {
+    const b = $('autoBtn');
+    b.classList.remove('active');
+    b.classList.add('autoset-press');
+    window.setTimeout(() => b.classList.remove('autoset-press'), 160);
+    runOscilloscopeAutoset();
+  };
+
+  $('fixedBtn').onclick = () => {
+    $('autoBtn').classList.remove('active','autoset-press');
+    setVerticalMode(false,null,true);
+  };
+
+  $('cmpCh1Toggle').onclick = () => {
+    setAnalysisTraceVisibility(1,!state.showCh1Analysis,true);
+  };
+
+  $('cmpCh2Toggle').onclick = () => {
+    setAnalysisTraceVisibility(2,!state.showCh2Analysis,true);
+  };
+
+  $('timeModeBtn').onclick = () => setCompareMode('time',true);
+  $('freqModeBtn').onclick = () => setCompareMode('frequency',true);
+
+  $('trigRiseBtn').onclick = () => {
+    state.triggerEdge = 'rise';
+    state.triggerSnapshot = null;
+    state.triggerCounter = null;
+    clearAutosetLockedSnapshot();
+    updateTriggerUi();
+    syncMpuTriggerConfig(true);
+    markDirty(true);
+  };
+
+  $('trigFallBtn').onclick = () => {
+    state.triggerEdge = 'fall';
+    state.triggerSnapshot = null;
+    state.triggerCounter = null;
+    clearAutosetLockedSnapshot();
+    updateTriggerUi();
+    syncMpuTriggerConfig(true);
+    markDirty(true);
+  };
+
+  function setTriggerLevel(v,syncTrigger=true) {
+    clearAutosetLockedSnapshot();
+    state.triggerLevel = clamp(Number(v)||0,0,3.3);
+    $('trigLevel').value = state.triggerLevel.toFixed(2);
+    $('trigLevelSlider').value = state.triggerLevel;
+    state.triggerSnapshot = null;
+    state.triggerCounter = null;
+    if (syncTrigger) syncMpuTriggerConfig();
+    markDirty(true);
+  }
+
+  $('trigLevelSlider').addEventListener('input',() => {
+    setTriggerLevel($('trigLevelSlider').value);
+  });
+  $('trigLevel').addEventListener('change',() => {
+    setTriggerLevel($('trigLevel').value);
+  });
+
+  $('trigOnBtn').onclick = () => {
+    state.triggerEnabled = true;
+    state.triggerSnapshot = null;
+    state.triggerCounter = null;
+    clearAutosetLockedSnapshot();
+    state.triggerStatus = 'AUTO · SEARCHING';
+    updateTriggerUi();
+    syncMpuTriggerConfig(true);
+    markDirty(true);
+  };
+
+  $('trigOffBtn').onclick = () => {
+    state.triggerEnabled = false;
+    state.triggerSnapshot = null;
+    state.triggerCounter = null;
+    clearAutosetLockedSnapshot();
+    state.triggerStatus = 'OFF · FREE RUN';
+    updateTriggerUi();
+    syncMpuTriggerConfig(true);
+    markDirty(true);
+  };
+
+  $('freqLinearBtn').onclick = () => setFrequencyAxis('linear',true);
+
+  $('freqLogBtn').onclick = () => setFrequencyAxis('log',true);
+
+  $('dacAutoFitBtn').onclick = () => {
+    const b = $('dacAutoFitBtn');
+    b.classList.add('autofit-press');
+    window.setTimeout(() => b.classList.remove('autofit-press'), 160);
+    autoFitDacPreview();
+  };
+  $('dacTimeDiv').addEventListener('input',e => updateDacTimebase(e.target.value,true));
+  $('adcTimeDiv').addEventListener('input',e => updateAdcTimebase(e.target.value,true,true));
+  enforceFrequencyControlRange();
+  // ADC sample rate is fixed at 2000 S/s in v19.16.
+
+  function commitFrequencySlider() {
+    if (!freqDragging) return;
+    freqDragging = false;
+    freqDetentLatch = null;
+    const f = Math.round(clamp(Number($('freq').value),MIN_FREQ,MAX_FREQ));
+    $('freq').classList.toggle('detent-hit',FREQUENCY_DETENTS.includes(f));
+    queueConfigCommit();
+  }
+
+  $('freqSlider').addEventListener('pointerdown',e => {
+    freqDragging = true;
+    freqDetentLatch = null;
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_) {}
+  });
+  $('freqSlider').addEventListener('input',() => {
+    const detent = snappedFrequencyFromSlider(
+      $('freqSlider').value
+    );
+    const f = Math.round(clamp(detent.f,MIN_FREQ,MAX_FREQ));
+    $('freqSlider').value = freqToSlider(f);
+    $('freq').value = String(f);
+    $('freq').classList.toggle('detent-hit',!!detent.latched);
+    updateSamplesPerCycle();
+    markDirty(true);
+  });
+  $('freqSlider').addEventListener('pointerup',commitFrequencySlider);
+  $('freqSlider').addEventListener('pointercancel',commitFrequencySlider);
+  $('freqSlider').addEventListener('change',() => {
+    if (!freqDragging) queueConfigCommit();
+  });
+  $('freq').addEventListener('input',() => {
+    const f=Math.round(clamp(pnum('freq',10),MIN_FREQ,MAX_FREQ));
+    $('freqSlider').value=freqToSlider(f);
+    $('freq').classList.toggle('detent-hit',FREQUENCY_DETENTS.includes(f));
+    updateSamplesPerCycle();
+    markDirty(true);
+  });
+  $('freq').addEventListener('change',() => {
+    const f=Math.round(clamp(pnum('freq',10),MIN_FREQ,MAX_FREQ));
+    $('freq').value=String(f);
+    $('freqSlider').value=freqToSlider(f);
+    $('freq').classList.toggle('detent-hit',FREQUENCY_DETENTS.includes(f));
+    updateSamplesPerCycle();
+    markDirty(true);
+    queueConfigCommit();
+  });
+
+  function commitAmpSlider() {
+    if (!ampDragging) return;
+    ampDragging = false;
+    queueConfigCommit();
+  }
+  $('ampSlider').addEventListener('pointerdown',e => {
+    ampDragging = true;
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_) {}
+  });
+  $('ampSlider').addEventListener('input',() => {
+    $('amp').value=Number($('ampSlider').value).toFixed(2);
+    markDirty(true);
+  });
+  $('ampSlider').addEventListener('pointerup',commitAmpSlider);
+  $('ampSlider').addEventListener('pointercancel',commitAmpSlider);
+  $('ampSlider').addEventListener('change',() => {
+    if (!ampDragging) queueConfigCommit();
+  });
+  $('amp').addEventListener('change',() => {
+    $('ampSlider').value=clamp(pnum('amp',1),0,1.65);
+    markDirty(true);
+    queueConfigCommit();
+  });
+
+  function commitOffsetSlider() {
+    if (!offsetDragging) return;
+    offsetDragging = false;
+    offsetDetentLatched = false;
+    $('offset').classList.remove('detent-hit');
+    queueConfigCommit();
+  }
+  $('offsetSlider').addEventListener('pointerdown',e => {
+    offsetDragging = true;
+    offsetDetentLatched = false;
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_) {}
+  });
+  $('offsetSlider').addEventListener('input',() => {
+    const v = snappedOffset($('offsetSlider').value);
+    $('offsetSlider').value = v;
+    $('offset').value = v.toFixed(2);
+    $('offset').classList.toggle(
+      'detent-hit',
+      offsetDetentLatched
+    );
+    markDirty(true);
+  });
+  $('offsetSlider').addEventListener('pointerup',commitOffsetSlider);
+  $('offsetSlider').addEventListener('pointercancel',commitOffsetSlider);
+  $('offsetSlider').addEventListener('change',() => {
+    if (!offsetDragging) queueConfigCommit();
+  });
+  $('offset').addEventListener('change',() => {
+    $('offsetSlider').value=clamp(pnum('offset',1.65),0,3.3);
+    markDirty(true);
+    queueConfigCommit();
+  });
+
+  $('noiseToggle').addEventListener('click',() => {
+    setNoiseControls(!state.noiseEnabled,state.noiseLevel);
+    markDirty(false);
+    queueNoiseCommit(0);
+  });
+
+  $('noiseLevel').addEventListener('input',() => {
+    const level = Math.round(clamp(Number($('noiseLevel').value),0,100));
+    state.noiseLevel = level;
+    $('noiseValue').textContent = level + '%';
+    markDirty(false);
+    queueNoiseCommit(75);
+  });
+
+  $('noiseLevel').addEventListener('change',() => {
+    queueNoiseCommit(0);
+  });
+
+  function applySourceDefault() {
+    // SOURCE-only reset. Keep DAC RUN/STOP, oscilloscope, trigger, HOLD,
+    // timebases, and analysis state untouched. Assigning select.value does
+    // not fire another change event, so returning to Sine cannot recurse.
+    if (configTimer) {
+      clearTimeout(configTimer);
+      configTimer = null;
+    }
+    if (noiseCommitTimer) {
+      clearTimeout(noiseCommitTimer);
+      noiseCommitTimer = null;
+    }
+
+    freqDragging = false;
+    ampDragging = false;
+    offsetDragging = false;
+    freqDetentLatch = null;
+    offsetDetentLatched = false;
+
+    setSourceControls({wf:'sine',f:10,a:1.00,o:1.65});
+    setNoiseControls(false,30);
+    markDirty(true);
+
+    queueConfigCommit();
+    queueNoiseCommit(0);
+  }
+
+  $('waveform').onchange = () => {
+    if ($('waveform').value === 'default') {
+      applySourceDefault();
+      return;
+    }
+
+    updateDcControlState();
+    markDirty(true);
+    queueConfigCommit();
+  };
+
+  async function initializeApp() {
+    ensureSourceNoiseTexture();
+    syncControlsFromNumbers();
+    updateDcControlState();
+    setNoiseControls(false,30);
+    updateDacTimebase(5);
+    updateAdcTimebase(5, false, false);
+    updateRunButtons();
+    setStatus('HARDWARE · CONNECTING',false);
+    updateTriggerUi();
+    setTriggerLevel(0.00,false);
+    setCompareMode('frequency');
+
+    // Read-only startup. Opening/reloading the browser must never overwrite
+    // the DAC with HTML default values.
+    try {
+      const r = await fetch('/api/status',{cache:'no-store'});
+      const j = await r.json();
+
+      state.adcRunning = !!j.adc_running;
+
+      if (j.source_synced && j.source) {
+        applyServerSource(j.source,true);
+      }
+      if (j.ui) applySharedUiState(j.ui,true);
+
+      updateRunButtons();
+    } catch (_) {}
+
+    // Read-only startup: a newly opened viewer follows the current shared UI
+    // and must not overwrite it with HTML defaults.
+    state.browserResumePending = true;
+    scheduleSamplePoll(0);
+    updateAnalysisTraceButtons();
+  pollMpuAnalysis();
+    renderLoop();
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    samplePollGeneration++;
+
+    if (samplePollTimer !== null) {
+      clearTimeout(samplePollTimer);
+      samplePollTimer = null;
+    }
+
+    if (document.hidden) {
+      // The MPU/MCU acquisition and analysis continue. Only browser sample
+      // polling is suspended while the page cannot render live frames.
+      return;
+    }
+
+    // Never replay stale browser history after a background-tab interval.
+    // The next request asks the server for its newest block immediately.
+    state.browserResumePending = true;
+    scheduleSamplePoll(0);
+  });
+
+  initializeApp();
+})();
+</script>
+</body>
+</html>

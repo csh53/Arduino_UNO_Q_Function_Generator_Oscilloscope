@@ -1,0 +1,6 @@
+name: UNO Q Function Generator & Oscilloscope
+icon: 🔬
+description: Stable DAC function generator and ADC oscilloscope with time and frequency analysis.
+
+ports:
+  - 8000

@@ -1,0 +1,25 @@
+UNO Q Function Generator & Oscilloscope — v19.52 validation
+
+- build_id: v19.52
+- v19.45 functional behavior retained as the completed baseline.
+- v19.51 lean /api/samples baseline retained; v19.52 changes only python/main.py runtime output behavior.
+- /api/status now includes network.active_clients based on unique remote IPs active on /api/samples or /api/analysis in the last 5 s.
+- Multiple tabs from the same remote IP count as one active computer.
+- 5 s rolling metrics: http_rps, samples_rps, analysis_rps, control_rps, status_rps.
+- 5 s rolling JSON response-body throughput: json_tx_kib_s and json_tx_mbps.
+- 5 s rolling average/max HTTP, sample and analysis response durations.
+- Cumulative total_http_requests and total_json_tx_bytes included.
+- No new polling loop or network-diagnostic worker thread.
+- Network metrics use a separate lightweight lock/deque; acquisition data_lock path unchanged.
+- Static asset transfers are not included in JSON/API throughput metrics.
+- Existing shared-control paths and shared_ui_state behavior unchanged.
+- Browser LIVE 1.0 s self-recovery unchanged.
+- Bridge RPC batch remains 256; acquisition scheduling unchanged.
+- ADC 2 kS/s, TIME 25 fps, MEASURE+COMPARE 2 Hz, FFT 2 Hz, 250 ms stagger and FFT N=16384 unchanged.
+- Spectrum display behavior unchanged from v19.45: <=0.3 Hz invisible, 0.3-0.5 Hz fade, >=0.5 Hz full opacity, axis minimum 0.2 Hz.
+
+
+v19.52 status-output validation:
+- /api/samples remains unchanged from v19.51 and returns only the browser-required LIVE/synchronization fields plus ring_size.
+- /api/status omits only top-level dma_* and adc_dma_* fields; internal state and DMA code are unchanged.
+- index.html, analysis_engine.py, and sketch.ino behavior are unchanged.
