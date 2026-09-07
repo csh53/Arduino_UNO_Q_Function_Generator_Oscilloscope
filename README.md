@@ -2,7 +2,7 @@
 
 ## Web UI
 
-![Web UI](Infographic/web_ui.png)
+![Web UI](web_ui.png)
 
 ![Project Overview](Infographic/00.png)
 
